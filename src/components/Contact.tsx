@@ -30,19 +30,19 @@ const socials = [
   {
     label: 'LeetCode',
     href: 'https://leetcode.com/u/this_is_surya/',
-    icon: <Trophy size={20} />,
+    icon: <Trophy size={16} />,
     color: '#f59e0b',
   },
   {
     label: 'Codeforces',
     href: 'https://codeforces.com/profile/_.surya._',
-    icon: <Code2 size={20} />,
+    icon: <Code2 size={16} />,
     color: '#00d4ff',
   },
   {
     label: 'CodeChef',
     href: 'https://www.codechef.com/users/this_is_surya',
-    icon: <ExternalLink size={20} />,
+    icon: <ExternalLink size={16} />,
     color: '#b45309',
   },
 ];
@@ -98,7 +98,7 @@ export default function Contact() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.45 }}
-          className="flex items-center justify-center gap-4 flex-wrap"
+          className="flex items-center justify-center gap-2 flex-wrap"
         >
           {socials.map((s) => (
             <a
@@ -106,7 +106,7 @@ export default function Contact() {
               href={s.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#ffffff15] bg-[#0a0a0f] text-slate-400 hover:text-white hover:border-[#ffffff30] transition-all duration-200 text-sm"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#ffffff15] bg-[#0a0a0f] text-slate-400 hover:text-white hover:border-[#ffffff30] transition-all duration-200 text-xs"
             >
               <span style={{ color: s.color }}>{s.icon}</span>
               {s.label}
