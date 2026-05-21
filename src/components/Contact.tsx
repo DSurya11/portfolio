@@ -30,19 +30,19 @@ const socials = [
   {
     label: 'LeetCode',
     href: 'https://leetcode.com/u/this_is_surya/',
-    icon: <Trophy size={16} />,
+    icon: <Trophy size={20} />,
     color: '#f59e0b',
   },
   {
     label: 'Codeforces',
     href: 'https://codeforces.com/profile/_.surya._',
-    icon: <Code2 size={16} />,
+    icon: <Code2 size={20} />,
     color: '#00d4ff',
   },
   {
     label: 'CodeChef',
     href: 'https://www.codechef.com/users/this_is_surya',
-    icon: <ExternalLink size={16} />,
+    icon: <ExternalLink size={20} />,
     color: '#b45309',
   },
 ];
@@ -106,7 +106,7 @@ export default function Contact() {
               href={s.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#ffffff15] bg-[#0a0a0f] text-slate-400 hover:text-white hover:border-[#ffffff30] transition-all duration-200 text-xs"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#ffffff15] bg-[#0a0a0f] text-slate-400 hover:text-white hover:border-[#ffffff30] transition-all duration-200 text-sm"
             >
               <span style={{ color: s.color }}>{s.icon}</span>
               {s.label}
