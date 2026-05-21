@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Mail, Trophy, Code2 } from 'lucide-react';
+import { Mail, Trophy, Code2, ExternalLink } from 'lucide-react';
 
 const GithubIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -39,6 +39,12 @@ const socials = [
     icon: <Code2 size={20} />,
     color: '#00d4ff',
   },
+  {
+    label: 'CodeChef',
+    href: 'https://www.codechef.com/users/this_is_surya',
+    icon: <ExternalLink size={20} />,
+    color: '#b45309',
+  },
 ];
 
 export default function Contact() {
@@ -46,7 +52,7 @@ export default function Contact() {
   const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section id="contact" className="py-20 bg-[#111118]" ref={ref}>
+    <section id="contact" className="pt-10 pb-20 bg-[#111118]" ref={ref}>
       <div className="max-w-3xl mx-auto px-6 md:px-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -66,9 +72,9 @@ export default function Contact() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="text-slate-400 text-lg mb-10 max-w-xl mx-auto leading-relaxed"
         >
-          I'm actively looking for{' '}
-          <span className="text-slate-200 font-medium">internship and full-time opportunities</span>.
-          My inbox is always open!
+          Currently targeting{' '}
+          <span className="text-slate-200 font-medium">Summer 2025 SDE internships</span>.
+          Let's talk.
         </motion.p>
 
         {/* Big email button */}
