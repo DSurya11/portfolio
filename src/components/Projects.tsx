@@ -80,7 +80,7 @@ const projects = [
       'Fully configurable via environment variables',
       'Ranked job matches exported to CSV',
     ],
-    github: 'https://github.com/DSurya11/AI-Powered-Job-Matching-Engine',
+    github: 'https://github.com/DSurya11/job-finder',
     live: null,
     accent: '#e11d48',
   },
