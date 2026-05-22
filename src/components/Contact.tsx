@@ -73,7 +73,9 @@ export default function Contact() {
           className="text-slate-400 text-lg mb-10 max-w-xl mx-auto leading-relaxed"
         >
           Currently targeting{' '}
-          <span className="text-slate-200 font-medium">Summer 2025 SDE internships</span>.
+          <span className="text-slate-200 font-medium">
+            Summer 2026 SDE internships, full-time roles
+          </span>.
           Let's talk.
         </motion.p>
 
