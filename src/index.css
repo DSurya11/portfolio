@@ -110,3 +110,55 @@ body {
   .grain { animation: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+/* Contact keyboard: a tilted plate of chunky keycaps. Each key's body is its stacked bottom
+   shadow; pressing moves the cap down into it. */
+.keyboard-plate {
+  border-radius: 26px;
+  padding: 18px;
+  background: linear-gradient(180deg, #16161e, #0f0f15);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 40px 80px -30px rgba(0, 0, 0, 0.9);
+  transform: rotateX(16deg);
+  transform-origin: 50% 100%;
+}
+@media (max-width: 640px) {
+  .keyboard-plate { transform: rotateX(8deg); padding: 12px; border-radius: 20px; }
+}
+.keycap {
+  --body: #0a0a0e;
+  display: block;
+  border-radius: 14px;
+  padding-bottom: 7px;
+  background: var(--body);
+  outline: none;
+  transition: padding 0.08s ease, margin 0.08s ease;
+}
+.keycap-top {
+  position: relative;
+  display: flex;
+  min-height: 74px;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 14px 14px;
+  border-radius: 14px;
+  background: radial-gradient(120% 90% at 50% 0%, #2a2a35 0%, #1c1c25 55%, #17171f 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.09) inset, 0 -2px 0 rgba(0, 0, 0, 0.35) inset;
+  transition: transform 0.08s ease;
+}
+.keycap-legend {
+  position: absolute;
+  left: 11px;
+  top: 7px;
+  font: 600 10px/1 ui-monospace, Menlo, monospace;
+  color: #64748b;
+}
+.keycap:hover { padding-bottom: 5px; margin-top: 2px; }
+.keycap:active, .keycap.is-down { padding-bottom: 1px; margin-top: 6px; }
+.keycap:focus-visible .keycap-top { box-shadow: 0 0 0 2px #00d4ff, 0 1px 0 rgba(255, 255, 255, 0.09) inset; }
+.keycap-accent { --body: #047a8f; }
+.keycap-accent .keycap-top {
+  background: radial-gradient(120% 90% at 50% 0%, #5fe6ff 0%, #12d2f7 55%, #00bfe0 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 -2px 0 rgba(0, 0, 0, 0.12) inset;
+}
+.keycap-accent .keycap-legend { color: #06505e; }

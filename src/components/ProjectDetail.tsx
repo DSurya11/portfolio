@@ -6,7 +6,6 @@ import { ArchDiagram } from './ArchDiagram';
 import { GithubIcon } from './icons';
 import { EASE_OUT, reducedMotion } from '../lib/motion';
 import { lockScroll } from '../lib/scroll';
-import { signalBus } from '../lib/signalBus';
 
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.35 } } };
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT } } };
@@ -36,13 +35,11 @@ export function ProjectDetail({ project, origin, onClose }: { project: Project; 
   useEffect(() => {
     opener.current = document.activeElement;
     lockScroll(true);
-    signalBus.dim = true;
     panel.current?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
     return () => {
       lockScroll(false);
-      signalBus.dim = false;
       window.removeEventListener('keydown', onKey);
       (opener.current as HTMLElement | null)?.focus?.({ preventScroll: true });
     };
