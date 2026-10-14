@@ -1,6 +1,7 @@
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { ExternalLink, BadgeCheck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ExternalLink, BadgeCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SectionHeading } from './fx/SectionHeading';
+import { gsap, useGSAP, reducedMotion } from '../lib/motion';
 
 const certs = [
   {
@@ -50,88 +51,183 @@ const certs = [
   },
 ];
 
+const STEP = 360 / certs.length;
+
+// The certificates stand on a turning cylinder. On desktop the section pins and scrolling turns
+// the ring one certificate at a time; anywhere, you can drag it or use the arrows.
 export default function Certifications() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const section = useRef<HTMLElement>(null);
+  const ring = useRef<HTMLDivElement>(null);
+  const angle = useRef({ scroll: 0, drag: 0, shown: 0 });
+  const [front, setFront] = useState(0);
+  const [radius, setRadius] = useState(330);
+
+  useEffect(() => {
+    const fit = () => setRadius(window.innerWidth < 640 ? 230 : window.innerWidth < 1024 ? 290 : 340);
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, []);
+
+  // One loop eases the shown angle toward scroll + drag and shades each card by how much it faces you.
+  useEffect(() => {
+    const reduce = reducedMotion();
+    let raf = 0;
+    let visible = false;
+    const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting), { rootMargin: '200px' });
+    io.observe(ring.current!.parentElement!);
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      if (!visible) return;
+      const a = angle.current;
+      const target = a.scroll + a.drag;
+      a.shown += (target - a.shown) * (reduce ? 1 : 0.1);
+      if (!ring.current) return;
+      ring.current.style.transform = `translateZ(${-radius}px) rotateY(${a.shown}deg)`;
+      const cards = ring.current.children;
+      let best = 0;
+      let bestFacing = -2;
+      for (let i = 0; i < cards.length; i++) {
+        const facing = Math.cos(((i * STEP + a.shown) * Math.PI) / 180);
+        const el = cards[i] as HTMLElement;
+        el.style.opacity = String(0.18 + Math.max(0, facing) * 0.82);
+        el.style.filter = facing > 0.92 ? 'none' : `blur(${(1 - Math.max(facing, 0)) * 2.5}px)`;
+        el.style.pointerEvents = facing > 0.7 ? 'auto' : 'none';
+        if (facing > bestFacing) {
+          bestFacing = facing;
+          best = i;
+        }
+      }
+      setFront((f) => (f === best ? f : best));
+    };
+    tick();
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+    };
+  }, [radius]);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+        gsap.to(angle.current, {
+          scroll: -STEP * (certs.length - 1),
+          ease: 'none',
+          scrollTrigger: { trigger: section.current, start: 'top top', end: '+=160%', pin: true, scrub: 0.6 },
+        });
+      });
+    },
+    { scope: section },
+  );
+
+  // Drag (mouse or touch) to turn; releasing snaps to the nearest certificate.
+  useEffect(() => {
+    const el = ring.current!.parentElement!;
+    let start: { x: number; drag: number } | null = null;
+    const down = (e: PointerEvent) => {
+      if ((e.target as HTMLElement).closest('a')) return;
+      start = { x: e.clientX, drag: angle.current.drag };
+    };
+    const move = (e: PointerEvent) => {
+      if (!start) return;
+      angle.current.drag = start.drag + (e.clientX - start.x) * 0.35;
+    };
+    const up = () => {
+      if (!start) return;
+      start = null;
+      const total = angle.current.scroll + angle.current.drag;
+      angle.current.drag += Math.round(total / STEP) * STEP - total;
+    };
+    el.addEventListener('pointerdown', down);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+    return () => {
+      window.removeEventListener('pointercancel', up);
+      el.removeEventListener('pointerdown', down);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+  }, []);
+
+  const turn = (dir: number) => {
+    angle.current.drag -= dir * STEP;
+  };
 
   return (
-    <section id="certifications" className="py-20" ref={ref}>
-      <div className="max-w-6xl mx-auto px-6 md:px-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <span className="text-[#00d4ff] font-mono text-sm tracking-widest uppercase">NPTEL &amp; courses</span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mt-3">
-            <span className="text-[#00d4ff]">Certifications</span>
-          </h2>
-        </motion.div>
+    <section id="certifications" ref={section} className="relative py-24 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-0">
+      <div className="relative z-10 max-w-6xl mx-auto w-full px-6 md:px-10">
+        <SectionHeading eyebrow="NPTEL & courses" className="lg:mb-6">
+          <span className="text-[#00d4ff]">Certifications</span>
+        </SectionHeading>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {certs.map((cert, i) => (
-            <motion.a
-              key={cert.title}
-              href={cert.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.55, delay: i * 0.12 }}
-              whileHover={{ y: -6 }}
-              className="group relative flex flex-col rounded-2xl border border-[#ffffff1e] bg-[#111118] p-6 overflow-hidden cursor-pointer transition-all duration-300 hover:border-[#00d4ff55] hover:shadow-[0_16px_48px_#00d4ff28]"
-            >
-              {/* Glow on hover */}
-              <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl"
-                style={{ background: 'radial-gradient(circle, #00d4ff 0%, transparent 70%)' }} />
-
-              {/* Verified badge */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full"
-                  style={{ backgroundColor: `${cert.badgeColor}33`, border: `1px solid ${cert.badgeColor}55`, color: cert.badgeColor }}>
-                  <BadgeCheck size={13} />
-                  {cert.badge}
+        <div className="relative mx-auto h-[420px] select-none [perspective:1500px] touch-pan-y" data-cursor="grab">
+          <div ref={ring} className="absolute left-1/2 top-1/2 h-0 w-0 [transform-style:preserve-3d]">
+            {certs.map((cert, i) => (
+              <a
+                key={cert.title}
+                href={cert.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabIndex={i === front ? 0 : -1}
+                draggable={false}
+                className="group absolute -left-[8.5rem] -top-[10.5rem] flex h-[21rem] w-[17rem] flex-col rounded-2xl border border-white/10 bg-[#0d0d15]/95 p-6 sm:-left-[9.5rem] sm:w-[19rem]"
+                style={{ transform: `rotateY(${i * STEP}deg) translateZ(${radius}px)`, borderColor: `${cert.badgeColor}55` }}
+              >
+                <div aria-hidden className="pointer-events-none absolute inset-0 rounded-2xl" style={{ background: `radial-gradient(ellipse at top right, ${cert.badgeColor}22, transparent 60%)` }} />
+                <div className="relative mb-5 flex items-center justify-between">
+                  <span
+                    className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
+                    style={{ backgroundColor: `${cert.badgeColor}26`, border: `1px solid ${cert.badgeColor}55`, color: cert.badgeColor }}
+                  >
+                    <BadgeCheck size={13} />
+                    {cert.badge}
+                  </span>
+                  <span className="font-mono text-xs text-slate-600">{String(i + 1).padStart(2, '0')}</span>
                 </div>
-                <ExternalLink
-                  size={14}
-                  className="text-slate-600 group-hover:text-[#00d4ff] transition-colors"
-                />
-              </div>
+                <h3 className="relative mb-2 text-lg font-semibold leading-snug text-white group-hover:text-[#00d4ff]">{cert.title}</h3>
+                <p className="relative flex items-center gap-1.5 text-xs text-slate-400">
+                  <BadgeCheck size={12} className="shrink-0 text-[#00d4ff]" />
+                  {cert.issuer}
+                </p>
+                <div className="relative mt-auto space-y-3">
+                  {cert.score && (
+                    <div className="flex items-end justify-between">
+                      <span className="text-xs text-slate-500">Score</span>
+                      <span className="text-4xl font-black" style={{ color: cert.badgeColor }}>
+                        {cert.score}
+                      </span>
+                    </div>
+                  )}
+                  {cert.rank && (
+                    <div className="flex justify-between">
+                      <span className="text-xs text-slate-500">Rank</span>
+                      <span className="text-xs font-medium text-[#00d4ff]">{cert.rank}</span>
+                    </div>
+                  )}
+                  {!cert.score && !cert.rank && <p className="text-xs text-slate-500">Self-paced certification course</p>}
+                  <span className="flex items-center gap-1.5 border-t border-white/10 pt-3 text-xs text-slate-400 group-hover:text-[#00d4ff]">
+                    View certificate <ExternalLink size={12} />
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
 
-              {/* Title */}
-              <h3 className="text-white font-semibold text-base leading-snug mb-2 group-hover:text-[#00d4ff] transition-colors">
-                {cert.title}
-              </h3>
-
-              {/* Issuer */}
-              <p className="text-slate-500 text-xs mb-4 flex items-center gap-1.5">
-                <BadgeCheck size={12} className="text-[#00d4ff] shrink-0" />
-                {cert.issuer}
-              </p>
-
-              {/* Stats */}
-              <div className="mt-auto space-y-2">
-                {cert.score && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">Score</span>
-                    <span className="text-sm font-bold" style={{ color: cert.badgeColor }}>
-                      {cert.score}
-                    </span>
-                  </div>
-                )}
-                {cert.rank && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500">Rank</span>
-                    <span className="text-xs text-[#00d4ff] font-medium">{cert.rank}</span>
-                  </div>
-                )}
-                {!cert.score && !cert.rank && (
-                  <p className="text-xs text-slate-500">Self-paced certification course</p>
-                )}
-              </div>
-            </motion.a>
-          ))}
+        <div className="mt-2 flex items-center justify-center gap-4">
+          <button type="button" onClick={() => turn(-1)} aria-label="Previous certificate" className="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-slate-300 hover:border-[#00d4ff] hover:text-[#00d4ff]">
+            <ChevronLeft size={18} />
+          </button>
+          <div className="flex gap-2">
+            {certs.map((c, i) => (
+              <span key={c.title} className={`h-1.5 rounded-full transition-all duration-300 ${i === front ? 'w-6 bg-[#00d4ff]' : 'w-1.5 bg-white/20'}`} />
+            ))}
+          </div>
+          <button type="button" onClick={() => turn(1)} aria-label="Next certificate" className="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-slate-300 hover:border-[#00d4ff] hover:text-[#00d4ff]">
+            <ChevronRight size={18} />
+          </button>
         </div>
       </div>
     </section>

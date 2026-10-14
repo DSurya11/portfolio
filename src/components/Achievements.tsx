@@ -1,45 +1,14 @@
+import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
-import { Trophy, Code2, ExternalLink } from 'lucide-react';
-
-interface CounterProps {
-  target: number;
-  suffix?: string;
-  prefix?: string;
-  duration?: number;
-  inView: boolean;
-}
-
-function AnimatedCounter({ target, suffix = '', prefix = '', duration = 1800, inView }: CounterProps) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const increment = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [inView, target, duration]);
-
-  return (
-    <span>
-      {prefix}{count}{suffix}
-    </span>
-  );
-}
+import { Trophy, Code2, ExternalLink, RotateCw } from 'lucide-react';
+import { SectionHeading } from './fx/SectionHeading';
+import { SlidingNumber } from './fx/SlidingNumber';
+import { gsap, useGSAP, reducedMotion } from '../lib/motion';
 
 const achievements = [
   {
     title: 'LeetCode Knight',
-    icon: <Trophy size={28} />,
+    icon: <Trophy size={26} />,
     accent: '#f59e0b',
     badge: '🏆 Knight',
     stats: [
@@ -52,7 +21,7 @@ const achievements = [
   },
   {
     title: 'Codeforces Pupil',
-    icon: <Code2 size={28} />,
+    icon: <Code2 size={26} />,
     accent: '#00d4ff',
     badge: '⚡ Pupil',
     stats: [
@@ -65,7 +34,7 @@ const achievements = [
   },
   {
     title: 'CodeChef 3★',
-    icon: <Trophy size={28} />,
+    icon: <Trophy size={26} />,
     accent: '#ec4899',
     badge: '⭐⭐⭐ 3-Star',
     stats: [
@@ -78,97 +47,127 @@ const achievements = [
   },
 ];
 
-export default function Achievements() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+type Achievement = (typeof achievements)[number];
+
+// Turns over on hover (or tap on touch screens, or the flip button from the keyboard).
+// Pattern from animate-ui "Flip Card" (animate-ui.com/docs/components/community/flip-card).
+function FlipCard({ ach, play }: { ach: Achievement; play: boolean }) {
+  const [flipped, setFlipped] = useState(false);
+  const [main, second] = ach.stats;
+  const face = 'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center [backface-visibility:hidden] bg-[#0b0b12]/90 backdrop-blur-md';
 
   return (
-    <section id="achievements" className="py-20 bg-[#111118]" ref={ref}>
-      <div className="max-w-6xl mx-auto px-6 md:px-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <span className="text-[#00d4ff] font-mono text-sm tracking-widest uppercase">Competitive programming</span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mt-3">
-            <span className="text-[#00d4ff]">Achievements</span>
-          </h2>
-        </motion.div>
+    <div
+      className="ach-card relative h-[380px] [perspective:1300px]"
+      onPointerEnter={(e) => e.pointerType === 'mouse' && setFlipped(true)}
+      onPointerLeave={(e) => e.pointerType === 'mouse' && setFlipped(false)}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest('a')) return;
+        setFlipped((f) => !f);
+      }}
+    >
+      <motion.div
+        className="relative h-full w-full [transform-style:preserve-3d]"
+        animate={{ rotateY: flipped ? 180 : 0 }}
+        transition={reducedMotion() ? { duration: 0 } : { type: 'spring', stiffness: 120, damping: 16 }}
+      >
+        <div className={face} style={{ borderColor: `${ach.accent}55` }}>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 rounded-2xl"
+            style={{ background: `radial-gradient(ellipse at top, ${ach.accent}26 0%, transparent 65%)` }}
+          />
+          <div className="relative mb-4 rounded-2xl p-3.5" style={{ backgroundColor: `${ach.accent}26`, color: ach.accent }}>
+            {ach.icon}
+          </div>
+          <h3 className="relative text-xl font-bold" style={{ color: ach.accent }}>
+            {ach.title}
+          </h3>
+          <span className="relative mt-2 rounded-full px-3 py-1 font-mono text-xs" style={{ backgroundColor: `${ach.accent}26`, color: ach.accent }}>
+            {ach.badge}
+          </span>
+          <div className="relative mt-auto text-6xl font-black tracking-tight text-white sm:text-7xl">
+            <SlidingNumber value={main.value} suffix={main.suffix} play={play} />
+          </div>
+          <span className="relative mt-2 text-xs uppercase tracking-widest text-slate-500">{main.label}</span>
+          <span className="relative mt-5 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-slate-600">
+            <RotateCw size={12} /> Flip for details
+          </span>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {achievements.map((ach, i) => (
-            <motion.a
-              key={ach.title}
-              href={ach.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: i * 0.15 }}
-              whileHover={{ y: -8 }}
-              className="group relative rounded-2xl bg-[#0a0a0f] p-8 flex flex-col items-center text-center overflow-hidden transition-all duration-300 cursor-pointer"
-              style={{ border: `1px solid ${ach.accent}55` }}
-            >
-              {/* Background glow */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: `radial-gradient(ellipse at top, ${ach.accent}30 0%, transparent 70%)`,
-                }}
-              />
-
-              {/* Icon */}
-              <div
-                className="relative z-10 p-4 rounded-2xl mb-5 transition-all duration-300 group-hover:scale-110"
-                style={{ backgroundColor: `${ach.accent}33`, color: ach.accent }}
-              >
-                {ach.icon}
+        <div className={`${face} justify-center [transform:rotateY(180deg)]`} style={{ borderColor: `${ach.accent}88` }}>
+          <p className="mb-6 font-mono text-xs uppercase tracking-[0.25em]" style={{ color: ach.accent }}>
+            {ach.platform}
+          </p>
+          <div className="mb-6 grid w-full grid-cols-2 gap-4">
+            {[main, second].map((s) => (
+              <div key={s.label} className="rounded-xl border border-white/10 bg-white/[0.03] py-4">
+                <div className="text-3xl font-bold text-white">
+                  {s.value}
+                  {s.suffix}
+                </div>
+                <div className="mt-1 text-xs text-slate-500">{s.label}</div>
               </div>
+            ))}
+          </div>
+          <p className="mb-6 text-sm leading-relaxed text-slate-300">{ach.details}</p>
+          <a
+            href={ach.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-[#0a0a0f]"
+            style={{ backgroundColor: ach.accent }}
+          >
+            View Profile <ExternalLink size={13} />
+          </a>
+        </div>
+      </motion.div>
+      <button
+        type="button"
+        className="sr-only focus:not-sr-only focus:absolute focus:right-3 focus:top-3 focus:z-10 focus:rounded focus:bg-white focus:px-2 focus:py-1 focus:text-xs focus:text-black"
+        onClick={(e) => {
+          e.stopPropagation();
+          setFlipped((f) => !f);
+        }}
+      >
+        Flip {ach.title} card
+      </button>
+    </div>
+  );
+}
 
-              {/* Title */}
-              <h3
-                className="relative z-10 text-xl font-bold mb-1 transition-colors duration-300"
-                style={{ color: ach.accent }}
-              >
-                {ach.title}
-              </h3>
+export default function Achievements() {
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-120px' });
 
-              <span
-                className="relative z-10 text-xs font-mono px-3 py-1 rounded-full mb-6"
-                style={{ backgroundColor: `${ach.accent}30`, color: ach.accent }}
-              >
-                {ach.badge}
-              </span>
+  useGSAP(
+    () => {
+      if (reducedMotion()) return;
+      gsap.from('.ach-card', {
+        rotateY: -75,
+        rotateX: 12,
+        z: -200,
+        opacity: 0,
+        transformPerspective: 1200,
+        transformOrigin: '0% 50%',
+        stagger: 0.16,
+        duration: 1.3,
+        ease: 'expo.out',
+        scrollTrigger: { trigger: '.ach-grid', start: 'top 82%', once: true },
+      });
+    },
+    { scope: ref },
+  );
 
-              {/* Stats */}
-              <div className="relative z-10 grid grid-cols-2 gap-4 w-full mb-5">
-                {ach.stats.map((stat) => (
-                  <div key={stat.label} className="flex flex-col items-center">
-                    <span className="text-2xl font-bold text-white">
-                      <AnimatedCounter
-                        target={stat.value}
-                        suffix={stat.suffix}
-                        inView={inView}
-                        duration={1500}
-                      />
-                    </span>
-                    <span className="text-xs text-slate-500 mt-1">{stat.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Details */}
-              <p className="relative z-10 text-slate-400 text-sm mb-4">{ach.details}</p>
-
-              <div
-                className="relative z-10 flex items-center gap-1.5 text-xs font-medium transition-colors duration-200 group-hover:underline"
-                style={{ color: ach.accent }}
-              >
-                View Profile <ExternalLink size={12} />
-              </div>
-            </motion.a>
+  return (
+    <section id="achievements" ref={ref} className="relative py-24 pb-40">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-10">
+        <SectionHeading eyebrow="Competitive programming">
+          <span className="text-[#00d4ff]">Achievements</span>
+        </SectionHeading>
+        <div className="ach-grid grid gap-6 md:grid-cols-3">
+          {achievements.map((ach) => (
+            <FlipCard key={ach.title} ach={ach} play={inView} />
           ))}
         </div>
       </div>

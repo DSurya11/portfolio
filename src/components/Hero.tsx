@@ -1,18 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useRef, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Trophy, ExternalLink } from 'lucide-react';
-
-const GithubIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-  </svg>
-);
-
-const LinkedinIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-  </svg>
-);
+import { GithubIcon, LinkedinIcon } from './icons';
+import { DecryptCycle } from './fx/Decrypt';
+import { Magnetic } from './fx/Magnetic';
+import { gsap, SplitText, useGSAP, reducedMotion } from '../lib/motion';
+import { scrollToId } from '../lib/scroll';
+import { signalBus } from '../lib/signalBus';
 
 const typingPhrases = [
   'I build AI-powered systems',
@@ -22,184 +16,116 @@ const typingPhrases = [
 ];
 
 const socialLinks = [
-  {
-    label: 'GitHub',
-    href: 'https://github.com/DSurya11',
-    icon: <GithubIcon />,
-  },
-  {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/surya-dantuluri-2a2b4a280/',
-    icon: <LinkedinIcon />,
-  },
-  {
-    label: 'LeetCode',
-    href: 'https://leetcode.com/u/this_is_surya/',
-    icon: <Trophy size={20} />,
-  },
-  {
-    label: 'Codeforces',
-    href: 'https://codeforces.com/profile/_.surya._',
-    icon: <Code2 size={20} />,
-  },
-  {
-    label: 'CodeChef',
-    href: 'https://www.codechef.com/users/this_is_surya',
-    icon: <ExternalLink size={20} />,
-  },
+  { label: 'GitHub', href: 'https://github.com/DSurya11', icon: <GithubIcon /> },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/surya-dantuluri-2a2b4a280/', icon: <LinkedinIcon /> },
+  { label: 'LeetCode', href: 'https://leetcode.com/u/this_is_surya/', icon: <Trophy size={20} /> },
+  { label: 'Codeforces', href: 'https://codeforces.com/profile/_.surya._', icon: <Code2 size={20} /> },
+  { label: 'CodeChef', href: 'https://www.codechef.com/users/this_is_surya', icon: <ExternalLink size={20} /> },
 ];
 
+const fade = (delay: number) => ({
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] as const },
+});
+
 export default function Hero() {
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [displayed, setDisplayed] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [charIndex, setCharIndex] = useState(0);
+  const root = useRef<HTMLElement>(null);
+  const signalFailed = useSyncExternalStore(
+    (l) => signalBus.subscribe(l),
+    () => signalBus.failed,
+  );
 
-  useEffect(() => {
-    const current = typingPhrases[phraseIndex];
-    let timeout: ReturnType<typeof setTimeout>;
-
-    if (!isDeleting && charIndex <= current.length) {
-      timeout = setTimeout(() => {
-        setDisplayed(current.slice(0, charIndex));
-        setCharIndex((c) => c + 1);
-      }, 60);
-    } else if (!isDeleting && charIndex > current.length) {
-      timeout = setTimeout(() => setIsDeleting(true), 1800);
-    } else if (isDeleting && charIndex >= 0) {
-      timeout = setTimeout(() => {
-        setDisplayed(current.slice(0, charIndex));
-        setCharIndex((c) => c - 1);
-      }, 35);
-    } else {
-      setIsDeleting(false);
-      setPhraseIndex((i) => (i + 1) % typingPhrases.length);
-      setCharIndex(0);
-    }
-    return () => clearTimeout(timeout);
-  }, [charIndex, isDeleting, phraseIndex]);
-
-  const scrollTo = (id: string) => {
-    document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
+  useGSAP(
+    () => {
+      if (reducedMotion()) return;
+      const split = SplitText.create('.hero-name', { type: 'chars', charsClass: 'split-char' });
+      gsap.from(split.chars, {
+        rotateX: -110,
+        yPercent: 80,
+        z: -120,
+        opacity: 0,
+        transformOrigin: '50% 100%',
+        stagger: 0.04,
+        duration: 1.2,
+        delay: 0.15,
+        ease: 'expo.out',
+      });
+      // As you scroll away the headline tips back into the screen.
+      gsap.to('.hero-copy', {
+        rotateX: 18,
+        z: -160,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom 15%', scrub: true },
+      });
+    },
+    { scope: root },
+  );
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-[88vh] flex items-center justify-center pt-16 pb-12 overflow-hidden"
-    >
-      {/* Gradient orbs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl animate-pulse"
-          style={{ background: 'radial-gradient(circle, #00d4ff 0%, transparent 70%)' }}
-        />
-        <div
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-15 blur-3xl animate-pulse"
-          style={{
-            background: 'radial-gradient(circle, #7c3aed 0%, transparent 70%)',
-            animationDelay: '1s',
-          }}
-        />
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-5 blur-3xl"
-          style={{ background: 'radial-gradient(circle, #00d4ff 0%, transparent 60%)' }}
-        />
-      </div>
-
-      {/* Grid background */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            'linear-gradient(#00d4ff 1px, transparent 1px), linear-gradient(90deg, #00d4ff 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8">
-        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
-
-          {/* ── LEFT: text ── */}
-          <div className="flex-1 text-center lg:text-left order-2 lg:order-1 pt-4">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-            >
-              <span className="inline-block text-[#00d4ff] text-sm font-mono tracking-widest uppercase mb-6 px-3 py-1 border border-[#00d4ff55] rounded-full bg-[#00d4ff15]">
+    <section ref={root} id="hero" className="relative min-h-[100svh] flex items-center justify-center pt-20 pb-12 overflow-hidden">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8 [perspective:1200px]">
+        <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
+          <div className="hero-copy flex-1 text-center lg:text-left order-2 lg:order-1 [transform-style:preserve-3d]">
+            <motion.div {...fade(0.1)}>
+              <span className="inline-flex items-center gap-2 text-[#00d4ff] text-xs sm:text-sm font-mono tracking-widest uppercase mb-6 px-3 py-1 border border-[#00d4ff55] rounded-full bg-[#00d4ff12]">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d4ff] opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d4ff]" />
+                </span>
                 Open to Internships &amp; Full-Time Roles
               </span>
             </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-tight"
-            >
+            <h1 className="hero-name text-6xl sm:text-7xl md:text-8xl font-bold text-white mb-6 leading-[0.95] tracking-tight [perspective:600px]">
               Hi, I'm{' '}
-              <span className="text-[#00d4ff]" style={{ textShadow: '0 0 30px #00d4ff66' }}>
+              <span className="text-[#00d4ff]" style={{ textShadow: '0 0 40px #00d4ff55' }}>
                 Surya
-              </span>{' '}
-              👋
-            </motion.h1>
+              </span>
+            </h1>
 
-            {/* Typing animation */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.35 }}
-              className="h-14 flex items-center justify-center lg:justify-start mb-6"
-            >
-              <p className="text-2xl sm:text-3xl md:text-4xl font-mono text-slate-300 min-h-[1.5em]">
-                <span>{displayed}</span>
-                <span className="inline-block w-0.5 h-9 bg-[#00d4ff] ml-1 animate-pulse align-middle" />
+            <motion.div {...fade(0.25)} className="h-14 flex items-center justify-center lg:justify-start mb-4">
+              <p className="text-xl sm:text-3xl md:text-[2.1rem] font-mono text-slate-300">
+                <span className="text-[#00d4ff]">&gt; </span>
+                <DecryptCycle phrases={typingPhrases} />
+                <span className="inline-block w-[0.55em] h-[1.1em] bg-[#00d4ff] ml-1 align-middle animate-[blink_1s_steps(1)_infinite]" />
               </p>
             </motion.div>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.5 }}
+              initial={{ y: 24 }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className="text-slate-400 text-lg mb-10"
             >
-              Pre-final year CSE @{' '}
-              <span className="text-slate-200 font-medium">IIIT Jabalpur</span> &nbsp;|&nbsp; CPI{' '}
+              Pre-final year CSE @ <span className="text-slate-200 font-medium">IIIT Jabalpur</span> &nbsp;|&nbsp; CPI{' '}
               <span className="text-[#00d4ff] font-semibold">8.1</span>
             </motion.p>
 
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.65 }}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10"
-            >
-              <button
-                onClick={() => scrollTo('#projects')}
-                className="px-8 py-3.5 bg-[#00d4ff] text-[#0a0a0f] font-semibold rounded-lg hover:bg-[#00bbdd] transition-all duration-200 shadow-lg shadow-[#00d4ff33] hover:shadow-[#00d4ff55] hover:-translate-y-0.5 text-sm"
-              >
-                View Projects
-              </button>
-              <a
-                href="https://drive.google.com/file/d/1im7brBirdHxuf1hUdZLaOUYjAk4Ou3UT/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-8 py-3.5 border border-[#00d4ff77] text-[#00d4ff] font-semibold rounded-lg hover:bg-[#00d4ff18] transition-all duration-200 hover:-translate-y-0.5 text-sm"
-              >
-                Download Resume
-              </a>
+            <motion.div {...fade(0.55)} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
+              <Magnetic>
+                <button
+                  onClick={() => scrollToId('#projects')}
+                  className="group relative overflow-hidden px-8 py-3.5 bg-[#00d4ff] text-[#0a0a0f] font-semibold rounded-lg shadow-lg shadow-[#00d4ff33] text-sm"
+                >
+                  <span className="relative z-10">View Projects</span>
+                  <span className="absolute inset-0 -translate-x-full bg-white/40 skew-x-12 transition-transform duration-700 group-hover:translate-x-full" />
+                </button>
+              </Magnetic>
+              <Magnetic>
+                <a
+                  href="https://drive.google.com/file/d/1im7brBirdHxuf1hUdZLaOUYjAk4Ou3UT/view?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-8 py-3.5 border border-[#00d4ff77] text-[#00d4ff] font-semibold rounded-lg hover:bg-[#00d4ff18] transition-colors duration-200 text-sm backdrop-blur-sm"
+                >
+                  Download Resume
+                </a>
+              </Magnetic>
             </motion.div>
 
-            {/* Social links */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.8 }}
-              className="flex items-center justify-center lg:justify-start gap-3 flex-wrap"
-            >
+            <motion.div {...fade(0.65)} className="flex items-center justify-center lg:justify-start gap-3 flex-wrap">
               {socialLinks.map((s) => (
                 <a
                   key={s.label}
@@ -207,7 +133,7 @@ export default function Hero() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.label}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#ffffff25] bg-[#ffffff0f] text-slate-400 hover:text-[#00d4ff] hover:border-[#00d4ff66] hover:bg-[#00d4ff18] transition-all duration-200 text-sm"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#ffffff20] bg-[#0a0a0f]/60 backdrop-blur-sm text-slate-400 hover:text-[#00d4ff] hover:border-[#00d4ff66] transition-colors duration-200 text-sm"
                 >
                   {s.icon}
                   <span className="hidden sm:inline">{s.label}</span>
@@ -216,56 +142,35 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* ── RIGHT: photo ── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="order-1 lg:order-2 flex-shrink-0 flex items-center justify-center lg:mr-4"
+          {/* The particle portrait assembles inside this box; the photo only shows if WebGL is unavailable. */}
+          <div
+            id="signal-face-anchor"
+            className="order-1 lg:order-2 relative shrink-0 w-64 h-64 sm:w-80 sm:h-80 lg:w-[30rem] lg:h-[30rem]"
           >
-            <div className="relative">
-              {/* Outer ambient glow */}
-              <div
-                className="absolute inset-0 rounded-full blur-2xl opacity-40 scale-110"
-                style={{ background: 'radial-gradient(circle, #00d4ff 0%, transparent 70%)' }}
+            {signalFailed && (
+              <img
+                src="/avatar.jpg"
+                alt="Dantuluri Surya Narayana Raju"
+                className="absolute inset-[12%] h-[76%] w-[76%] rounded-full object-cover border-2 border-[#00d4ff]"
+                style={{ objectPosition: 'center 5%' }}
               />
-              {/* Rotating dashed ring */}
-              <div
-                className="absolute -inset-3 rounded-full border border-dashed border-[#00d4ff44] animate-spin"
-                style={{ animationDuration: '12s' }}
-              />
-              {/* Photo container */}
-              <div
-                className="relative w-60 h-60 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden"
-                style={{
-                  border: '3px solid #00d4ff',
-                  boxShadow: '0 0 30px #00d4ff66, 0 0 60px #00d4ff33, inset 0 0 20px #00d4ff11',
-                }}
-              >
-                <img
-                  src="/avatar.jpg"
-                  alt="Dantuluri Surya Narayana Raju"
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: 'center 5%' }}
-                />
-              </div>
-            </div>
-          </motion.div>
-
+            )}
+            <span className="sr-only">Portrait of Surya drawn in particles</span>
+          </div>
         </div>
 
-        {/* Scroll indicator — in content flow, always below social links */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="flex flex-col items-center gap-2 mt-10"
+        <motion.button
+          {...fade(1.2)}
+          onClick={() => scrollToId('#about')}
+          className="mx-auto mt-10 flex flex-col items-center gap-2"
+          aria-label="Scroll to About"
         >
-          <span className="text-slate-600 text-xs tracking-widest uppercase">Scroll</span>
-          <div className="w-px h-10 bg-gradient-to-b from-[#00d4ff55] to-transparent animate-pulse" />
-        </motion.div>
+          <span className="text-slate-400 text-xs tracking-[0.3em] uppercase">Scroll</span>
+          <span className="relative block h-10 w-6 rounded-full border border-slate-600">
+            <span className="absolute left-1/2 top-2 h-2 w-1 -translate-x-1/2 rounded-full bg-[#00d4ff] animate-[scrolldot_1.6s_ease-in-out_infinite]" />
+          </span>
+        </motion.button>
       </div>
-
     </section>
   );
 }
