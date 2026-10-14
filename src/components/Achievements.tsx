@@ -54,9 +54,12 @@ type Achievement = (typeof achievements)[number];
 function FlipCard({ ach, play }: { ach: Achievement; play: boolean }) {
   const [flipped, setFlipped] = useState(false);
   const [main, second] = ach.stats;
-  // Faces are fully opaque with no backdrop blur: a see-through or blurred face makes Chrome
-  // ignore backface-visibility, and the other side showed through mirrored.
-  const face = 'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center bg-[#0b0b12] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]';
+  // Frosted glass: each face is mostly opaque, and the side facing away is dimmed and blurred,
+  // so it shows through faintly (mirrored) while the side facing you stays crisp. Each face sits
+  // 1px toward its own side so the facing one is always drawn in front.
+  const face =
+    'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center bg-[#0b0b12]/[0.8] transition-[opacity,filter] duration-500';
+  const away = { opacity: 0.7, filter: 'blur(1.6px)', pointerEvents: 'none' as const };
 
   return (
     <div
@@ -73,7 +76,7 @@ function FlipCard({ ach, play }: { ach: Achievement; play: boolean }) {
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={reducedMotion() ? { duration: 0 } : { type: 'spring', stiffness: 120, damping: 16 }}
       >
-        <div className={face} style={{ borderColor: `${ach.accent}55` }}>
+        <div className={face} style={{ borderColor: `${ach.accent}55`, transform: 'translateZ(1px)', ...(flipped ? away : {}) }}>
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 rounded-2xl"
@@ -97,7 +100,10 @@ function FlipCard({ ach, play }: { ach: Achievement; play: boolean }) {
           </span>
         </div>
 
-        <div className={`${face} justify-center [transform:rotateY(180deg)]`} style={{ borderColor: `${ach.accent}88` }}>
+        <div
+          className={`${face} justify-center`}
+          style={{ borderColor: `${ach.accent}88`, transform: 'rotateY(180deg) translateZ(1px)', ...(flipped ? {} : away) }}
+        >
           <p className="mb-6 font-mono text-xs uppercase tracking-[0.25em]" style={{ color: ach.accent }}>
             {ach.platform}
           </p>
