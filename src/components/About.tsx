@@ -3,7 +3,7 @@ import { MapPin, Mail, Hand } from 'lucide-react';
 import { SectionHeading } from './fx/SectionHeading';
 import { makeBadgeFaces, BADGE_COLOR } from './badge';
 import { Boundary } from './fx/Boundary';
-import { whenCalm } from '../lib/calm';
+import { markDone } from '../lib/ready';
 import { gsap, SplitText, useGSAP, reducedMotion } from '../lib/motion';
 
 const Lanyard = lazy(() => import('./vendor/Lanyard'));
@@ -15,6 +15,12 @@ const Lanyard = lazy(() => import('./vendor/Lanyard'));
 // pulled down without being cut off at the section edge. It is see-through and ignores pointer
 // input. The strap still hangs from the top of the box (anchorDrop).
 const OVERHANG = 640;
+
+// If the 3D card can't run (no WebGL), don't hold the loading screen for it.
+function BadgeFailed() {
+  useEffect(() => markDone('badge'), []);
+  return null;
+}
 const OVER_TOP = 420;
 
 function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
@@ -22,18 +28,12 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
   const [wide, setWide] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
   const box = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(900);
-  // Build the card (artwork, then three.js) only while the page is calm, never mid-scroll.
+  // Built straight away, behind the loading screen; the page is revealed once its scene is ready.
   useEffect(() => {
-    let cancel = () => {};
     let alive = true;
-    cancel = whenCalm(() =>
-      makeBadgeFaces().then((made) => {
-        if (alive) cancel = whenCalm(() => setFaces(made));
-      }),
-    );
+    makeBadgeFaces().then((made) => alive && setFaces(made));
     return () => {
       alive = false;
-      cancel();
     };
   }, []);
   useEffect(() => {
@@ -60,7 +60,7 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
 
   const card = faces && (
     <div className="pointer-events-none absolute inset-x-0 z-20" style={{ top: -OVER_TOP, height: canvasH }}>
-      <Boundary>
+      <Boundary fallback={<BadgeFailed />}>
         <Suspense fallback={null}>
           <Lanyard
             frontImage={faces.front}
@@ -75,6 +75,7 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
             size={Math.min(0.6, cardPx / canvasH)}
             strapLength={strapLength}
             breeze={0.6}
+            onReady={() => markDone('badge')}
           />
         </Suspense>
       </Boundary>
@@ -137,7 +138,7 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <div>
             <p ref={bio} className="text-slate-200 text-xl md:text-2xl leading-relaxed mb-8">
-              I'm a pre-final year Computer Science student at <span className="text-[#00d4ff] font-medium">IIIT Jabalpur</span> with
+              I'm a final year Computer Science student at <span className="text-[#00d4ff] font-medium">IIIT Jabalpur</span> with
               a CPI of <span className="text-[#00d4ff] font-semibold">8.1</span>. I specialize in building production-grade AI
               systems, real-time ML pipelines, and full-stack applications. Passionate about backend engineering, machine
               learning, and competitive programming.

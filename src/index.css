@@ -145,3 +145,5 @@ body {
 .page-x { margin-inline: auto; width: 100%; max-width: 1440px; padding-inline: 1.5rem; }
 @media (min-width: 768px) { .page-x { padding-inline: 2.5rem; } }
 @media (min-width: 1280px) { .page-x { padding-inline: 3.5rem; } }
+
+@keyframes loadbar { from { transform: scaleX(0); } to { transform: scaleX(1); } }

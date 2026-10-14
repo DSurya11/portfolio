@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   siCplusplus, siPython, siJavascript, siTypescript, siMysql, siReact, siHtml5, siSocketdotio, siNodedotjs,
   siExpress, siFastapi, siPostgresql, siMongodb, siRedis, siPrisma, siSqlalchemy, siNumpy, siPandas,
@@ -6,7 +6,6 @@ import {
 } from 'simple-icons';
 import { IconCloud, type CloudItem } from './IconCloud';
 import { SectionHeading } from './fx/SectionHeading';
-import { useNear } from '../lib/useNear';
 
 const skillGroups = [
   { category: 'Languages', color: '#00d4ff', skills: ['C++', 'Python', 'JavaScript', 'TypeScript', 'SQL'] },
@@ -39,8 +38,6 @@ const cloudItems: CloudItem[] = skillGroups.flatMap((g) =>
 
 export default function Skills() {
   const [active, setActive] = useState<string | null>(null);
-  const cloudRef = useRef<HTMLDivElement>(null);
-  const near = useNear(cloudRef);
 
   return (
     <section id="skills" className="relative py-24">
@@ -50,8 +47,8 @@ export default function Skills() {
         </SectionHeading>
 
         <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-8">
-          <div ref={cloudRef} className="relative mx-auto w-full max-w-[680px]">
-            {near ? <IconCloud items={cloudItems} groupColors={groupColors} highlight={active} /> : <div className="aspect-square w-full" />}
+          <div className="relative mx-auto w-full max-w-[680px]">
+            <IconCloud items={cloudItems} groupColors={groupColors} highlight={active} />
             <p className="mt-2 text-center font-mono text-xs uppercase tracking-widest text-slate-500">Drag to spin · tap a logo</p>
           </div>
 

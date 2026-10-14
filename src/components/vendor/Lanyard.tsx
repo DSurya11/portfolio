@@ -37,6 +37,8 @@ export interface LanyardProps {
   anchor?: Anchor;
   /** Local addition: how far below the canvas top the strap hangs from, as a fraction of its height. */
   anchorDrop?: number;
+  /** Local addition: called once the scene has compiled and is drawn. */
+  onReady?: () => void;
   strapLength?: number;
   strapImage?: string;
   strapColor?: string;
@@ -63,6 +65,7 @@ interface Settings {
   size: number;
   anchor: Anchor;
   anchorDrop: number;
+  onReady?: () => void;
   strapLength: number;
   strapImage?: string;
   strapColor: string;
@@ -888,6 +891,7 @@ const Lanyard = ({
   size = 0.6,
   anchor = 'center',
   anchorDrop = 0,
+  onReady,
   strapLength = 0.5,
   strapImage,
   strapColor = '#111111',
@@ -917,6 +921,7 @@ const Lanyard = ({
     size,
     anchor,
     anchorDrop,
+    onReady,
     strapLength,
     strapImage,
     strapColor,
@@ -1026,6 +1031,14 @@ const Lanyard = ({
     ring.rotation.y = Math.PI / 2 - 0.7;
     cardGroup.add(bodyMesh, frontMesh, backMesh, ring);
     scene.add(cardGroup);
+    // Local change: the strap doesn't collide with the card, so when the card is lifted the
+    // strap could pass through it and look like it came out of the card. The card is drawn last
+    // with the depth buffer cleared first, so it always covers the strap where they overlap.
+    bodyMesh.renderOrder = 1;
+    frontMesh.renderOrder = 2;
+    backMesh.renderOrder = 2;
+    ring.renderOrder = 2;
+    bodyMesh.onBeforeRender = (r) => r.clearDepth();
 
     const bandGeometry = buildBandGeometry(SAMPLES);
     const band = new THREE.Mesh(bandGeometry, bandMaterial);
@@ -1445,7 +1458,8 @@ const Lanyard = ({
     const resize = () => {
       view.width = Math.max(1, container.clientWidth);
       view.height = Math.max(1, container.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      // Local change: capped at 1.5x; the canvas spans a whole section, so 2x is a very large frame.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.setSize(view.width, view.height, false);
       apply();
       render();
@@ -1473,6 +1487,7 @@ const Lanyard = ({
       canvas.style.opacity = '1';
       render();
       start();
+      settingsRef.current?.onReady?.();
     };
     renderer.compileAsync(scene, camera).then(reveal, reveal);
 

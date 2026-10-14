@@ -1,24 +1,37 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import { startSmoothScroll } from './lib/scroll';
-import { useIdle } from './lib/useIdle';
+import BelowFold from './BelowFold';
+import { Loader } from './components/Loader';
+import { startSmoothScroll, lockScroll } from './lib/scroll';
+import { onReady } from './lib/ready';
 
-const BelowFold = lazy(() => import('./BelowFold'));
+// A refresh always starts at the top: restoring mid-page while pinned sections are still being
+// measured lands in the wrong place.
+if (typeof window !== 'undefined' && 'scrollRestoration' in history) history.scrollRestoration = 'manual';
 
 export default function App() {
-  useEffect(() => startSmoothScroll(), []);
-  // The hero paints first; the rest of the page follows once the browser is idle.
-  const idle = useIdle();
+  useEffect(() => {
+    const stop = startSmoothScroll();
+    window.scrollTo(0, 0);
+    // No scrolling until the loading screen lifts; everything below is still being prepared.
+    lockScroll(true);
+    const off = onReady(() => lockScroll(false));
+    return () => {
+      off();
+      stop();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-slate-100">
+      <Loader />
       <div aria-hidden className="grain" />
       <Navbar />
       <div className="relative z-10">
         <Hero />
       </div>
-      <Suspense fallback={<div className="min-h-screen" />}>{idle ? <BelowFold /> : <div className="min-h-screen" />}</Suspense>
+      <BelowFold />
     </div>
   );
 }
