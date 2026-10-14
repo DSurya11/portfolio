@@ -59,7 +59,7 @@ function FlipCard({ ach, play }: { ach: Achievement; play: boolean }) {
   // 1px toward its own side so the facing one is always drawn in front.
   const face =
     'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center bg-[#0b0b12]/[0.8] transition-[opacity,filter] duration-500';
-  const away = { opacity: 0.7, filter: 'blur(1.6px)', pointerEvents: 'none' as const };
+  const away = { opacity: 0.6, filter: 'blur(4.5px)', pointerEvents: 'none' as const };
 
   return (
     <div
