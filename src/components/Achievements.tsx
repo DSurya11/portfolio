@@ -54,7 +54,9 @@ type Achievement = (typeof achievements)[number];
 function FlipCard({ ach, play }: { ach: Achievement; play: boolean }) {
   const [flipped, setFlipped] = useState(false);
   const [main, second] = ach.stats;
-  const face = 'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center [backface-visibility:hidden] bg-[#0b0b12]/90 backdrop-blur-md';
+  // Faces are fully opaque with no backdrop blur: a see-through or blurred face makes Chrome
+  // ignore backface-visibility, and the other side showed through mirrored.
+  const face = 'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center bg-[#0b0b12] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]';
 
   return (
     <div

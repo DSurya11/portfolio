@@ -3,7 +3,7 @@ import { MapPin, Mail, Hand } from 'lucide-react';
 import { SectionHeading } from './fx/SectionHeading';
 import { makeBadgeFaces, BADGE_COLOR } from './badge';
 import { Boundary } from './fx/Boundary';
-import { useNear } from '../lib/useNear';
+import { whenCalm } from '../lib/calm';
 import { gsap, SplitText, useGSAP, reducedMotion } from '../lib/motion';
 
 const Lanyard = lazy(() => import('./vendor/Lanyard'));
@@ -11,20 +11,31 @@ const Lanyard = lazy(() => import('./vendor/Lanyard'));
 // On desktop the badge's canvas covers the whole section (pointer input passes through to the
 // text), so the card can be thrown anywhere without being clipped by a box. On phones it
 // hangs in its own block under the text.
-// The canvas runs well past the bottom of its box, so the card can be pulled down or thrown
-// without being cut off at the section edge. It is see-through and ignores pointer input.
+// The canvas runs well past the top and bottom of its box, so the card can be thrown up or
+// pulled down without being cut off at the section edge. It is see-through and ignores pointer
+// input. The strap still hangs from the top of the box (anchorDrop).
 const OVERHANG = 640;
+const OVER_TOP = 420;
 
 function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
   const [faces, setFaces] = useState<{ front: string; back: string; strap: string } | null>(null);
   const [wide, setWide] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
   const box = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(900);
-  // Only build the card (and load three.js for it) once the section is close to the screen.
-  const near = useNear(section, '200px');
+  // Build the card (artwork, then three.js) only while the page is calm, never mid-scroll.
   useEffect(() => {
-    if (near) makeBadgeFaces().then(setFaces);
-  }, [near]);
+    let cancel = () => {};
+    let alive = true;
+    cancel = whenCalm(() =>
+      makeBadgeFaces().then((made) => {
+        if (alive) cancel = whenCalm(() => setFaces(made));
+      }),
+    );
+    return () => {
+      alive = false;
+      cancel();
+    };
+  }, []);
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
     const onChange = () => setWide(mq.matches);
@@ -40,15 +51,15 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
     return () => ro.disconnect();
   }, [wide, section]);
 
-  const canvasH = height + OVERHANG;
+  const canvasH = OVER_TOP + height + OVERHANG;
   // Same card as before the canvas grew: ~340 px tall on desktop (0.6 of the box on phones),
   // with its top resting ~30% down the box.
   const cardPx = wide ? 340 : height * 0.6;
   const restTop = (wide ? 0.306 : 0.285) * height;
-  const strapLength = Math.min(1, Math.max(0, (restTop / canvasH - 0.12) / 0.3));
+  const strapLength = Math.min(1, Math.max(0, ((OVER_TOP + restTop) / canvasH - 0.12) / 0.3));
 
   const card = faces && (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-20" style={{ height: canvasH }}>
+    <div className="pointer-events-none absolute inset-x-0 z-20" style={{ top: -OVER_TOP, height: canvasH }}>
       <Boundary>
         <Suspense fallback={null}>
           <Lanyard
@@ -60,6 +71,7 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
             strapColor="#10141c"
             metal="silver"
             anchor={wide ? 'right' : 'center'}
+            anchorDrop={OVER_TOP / canvasH}
             size={Math.min(0.6, cardPx / canvasH)}
             strapLength={strapLength}
             breeze={0.6}

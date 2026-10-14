@@ -1,13 +1,13 @@
-// Draws the lanyard ID card (both faces) and its strap from the real photo and the About
-// details, so the text stays in code instead of a baked image. One quiet design: a full-bleed
-// photo fading into a near-black card, name and three facts on the front; numbers and contact
-// on the back. No barcode or fake ID furniture.
+// Draws the lanyard ID card (both faces) and its strap from the real photo, so the text stays
+// in code instead of a baked image. Reads like a real badge: photo, name, program and batch on
+// the front; "if found, return to" contact on the back. The card is drawn ~3x larger than it
+// appears on screen, so every line is set big (>= 30px here) to stay sharp once scaled down.
 const W = 720;
 const H = 1012;
 const BG = '#0e1014';
 const TEXT = '#f3f5f8';
-const MUTED = '#8b93a1';
-const FAINT = 'rgba(255,255,255,0.09)';
+const MUTED = '#9aa3b1';
+const FAINT = 'rgba(255,255,255,0.1)';
 const CYAN = '#22d3ee';
 const SANS = 'system-ui, -apple-system, "Segoe UI", sans-serif';
 const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
@@ -46,126 +46,102 @@ function cover(ctx: Ctx, img: HTMLImageElement, x: number, y: number, w: number,
   ctx.restore();
 }
 
-// The small mark and institute name shared by both faces, either side of the clip's slot.
+// Sets `text` at the largest size up to `max` that fits in `width`.
+function fitText(ctx: Ctx, text: string, x: number, y: number, width: number, max: number, weight: number, family = SANS) {
+  let size = max;
+  do {
+    ctx.font = `${weight} ${size}px ${family}`;
+    size -= 2;
+  } while (ctx.measureText(text).width > width && size > 20);
+  ctx.fillText(text, x, y);
+}
+
+// The mark and institute shared by both faces, either side of the clip's slot.
 function masthead(ctx: Ctx, onPhoto: boolean) {
   ctx.textBaseline = 'alphabetic';
-  ctx.font = `800 40px ${SANS}`;
+  ctx.font = `800 54px ${SANS}`;
   ctx.fillStyle = CYAN;
-  ctx.fillText('D', PAD, 104);
+  ctx.fillText('D', PAD, 112);
   ctx.fillStyle = TEXT;
-  ctx.fillText('S', PAD + ctx.measureText('D').width, 104);
-  ctx.font = `600 17px ${MONO}`;
-  ctx.fillStyle = onPhoto ? 'rgba(255,255,255,0.85)' : MUTED;
+  ctx.fillText('S', PAD + ctx.measureText('D').width, 112);
+  ctx.font = `700 28px ${MONO}`;
+  ctx.fillStyle = onPhoto ? 'rgba(255,255,255,0.92)' : MUTED;
   ctx.textAlign = 'right';
-  ctx.fillText('IIIT JABALPUR', W - PAD, 98);
+  ctx.fillText('IIIT JBP', W - PAD, 104);
   ctx.textAlign = 'left';
-}
-
-function fact(ctx: Ctx, x: number, y: number, label: string, value: string, valueSize = 30) {
-  ctx.font = `600 15px ${MONO}`;
-  ctx.fillStyle = MUTED;
-  ctx.fillText(label, x, y);
-  ctx.font = `700 ${valueSize}px ${SANS}`;
-  ctx.fillStyle = TEXT;
-  ctx.fillText(value, x, y + valueSize + 10);
-}
-
-function wrap(ctx: Ctx, text: string, x: number, y: number, maxW: number, lineH: number) {
-  let line = '';
-  for (const word of text.split(' ')) {
-    const next = line ? `${line} ${word}` : word;
-    if (ctx.measureText(next).width > maxW && line) {
-      ctx.fillText(line, x, y);
-      y += lineH;
-      line = word;
-    } else line = next;
-  }
-  ctx.fillText(line, x, y);
-  return y;
 }
 
 export async function makeBadgeFaces() {
   const img = await loadImage('/surya-id.webp');
+  const inner = W - PAD * 2;
 
   // ── Front ──
   const [front, f] = canvas(W, H);
   f.fillStyle = BG;
   f.fillRect(0, 0, W, H);
-  const photoH = 650;
+  const photoH = 640;
   if (img) cover(f, img, 0, 0, W, photoH, 0.18);
-  // Darken the top a touch for the masthead, and fade the photo into the card at the bottom.
-  const top = f.createLinearGradient(0, 0, 0, 190);
-  top.addColorStop(0, 'rgba(8,10,14,0.55)');
+  const top = f.createLinearGradient(0, 0, 0, 200);
+  top.addColorStop(0, 'rgba(8,10,14,0.6)');
   top.addColorStop(1, 'rgba(8,10,14,0)');
   f.fillStyle = top;
-  f.fillRect(0, 0, W, 190);
-  const fade = f.createLinearGradient(0, photoH - 230, 0, photoH);
+  f.fillRect(0, 0, W, 200);
+  const fade = f.createLinearGradient(0, photoH - 240, 0, photoH);
   fade.addColorStop(0, 'rgba(14,16,20,0)');
   fade.addColorStop(1, BG);
   f.fillStyle = fade;
-  f.fillRect(0, photoH - 230, W, 230);
+  f.fillRect(0, photoH - 240, W, 240);
   masthead(f, true);
 
-  f.font = `600 18px ${MONO}`;
   f.fillStyle = CYAN;
   f.beginPath();
-  f.arc(PAD + 6, 652, 6, 0, Math.PI * 2);
+  f.arc(PAD + 9, 646, 9, 0, Math.PI * 2);
   f.fill();
-  f.fillText('OPEN TO INTERNSHIPS', PAD + 24, 658);
-  f.font = `800 66px ${SANS}`;
+  f.font = `700 30px ${MONO}`;
+  f.fillText('OPEN TO WORK', PAD + 32, 657);
   f.fillStyle = TEXT;
-  f.fillText('Surya Dantuluri', PAD - 2, 740);
-  f.font = `500 25px ${SANS}`;
+  fitText(f, 'Surya Dantuluri', PAD - 2, 752, inner, 82, 800);
   f.fillStyle = MUTED;
-  f.fillText('B.Tech Computer Science · IIIT Jabalpur', PAD, 786);
+  fitText(f, 'B.Tech CSE · IIIT Jabalpur', PAD, 812, inner, 40, 500);
   f.fillStyle = FAINT;
-  f.fillRect(PAD, 836, W - PAD * 2, 2);
-  const col = (W - PAD * 2) / 3;
-  fact(f, PAD, 884, 'CLASS OF', '2027');
-  fact(f, PAD + col, 884, 'CPI', '8.1');
-  fact(f, PAD + col * 2, 884, 'LEETCODE', '1948');
+  f.fillRect(PAD, 860, inner, 3);
+  f.font = `700 30px ${MONO}`;
+  f.fillStyle = MUTED;
+  f.fillText('STUDENT', PAD, 930);
+  f.textAlign = 'right';
+  f.fillStyle = TEXT;
+  f.fillText('2023 – 2027', W - PAD, 930);
+  f.textAlign = 'left';
 
   // ── Back ──
   const [back, b] = canvas(W, H);
   b.fillStyle = BG;
   b.fillRect(0, 0, W, H);
   masthead(b, false);
-  b.font = `600 18px ${MONO}`;
+  b.font = `700 30px ${MONO}`;
   b.fillStyle = CYAN;
-  b.fillText('WHAT I BUILD', PAD, 228);
-  b.font = `650 38px ${SANS}`;
+  b.fillText('IF FOUND, RETURN TO', PAD, 290);
   b.fillStyle = TEXT;
-  wrap(b, 'AI systems, real-time ML pipelines and full-stack applications.', PAD, 286, W - PAD * 2, 50);
-
-  const gridTop = 430;
-  const cellW = (W - PAD * 2) / 2;
-  const cellH = 150;
+  fitText(b, 'Surya Dantuluri', PAD - 2, 372, inner, 74, 800);
+  const line = (y: number, label: string, value: string) => {
+    b.fillStyle = FAINT;
+    b.fillRect(PAD, y - 66, inner, 3);
+    b.font = `700 26px ${MONO}`;
+    b.fillStyle = MUTED;
+    b.fillText(label, PAD, y - 18);
+    b.fillStyle = TEXT;
+    fitText(b, value, PAD, y + 26, inner, 38, 600);
+  };
+  line(520, 'EMAIL', 'suryadantuluri2005@gmail.com');
+  line(660, 'GITHUB', 'github.com/DSurya11');
+  line(800, 'LINKEDIN', 'in/surya-dantuluri');
   b.fillStyle = FAINT;
-  b.fillRect(PAD, gridTop, W - PAD * 2, 2);
-  b.fillRect(PAD, gridTop + cellH, W - PAD * 2, 2);
-  b.fillRect(PAD, gridTop + cellH * 2, W - PAD * 2, 2);
-  b.fillRect(PAD + cellW, gridTop, 2, cellH * 2);
-  const cells: [string, string][] = [
-    ['CPI', '8.1'],
-    ['LEETCODE RATING', '1948'],
-    ['PROBLEMS SOLVED', '789'],
-    ['PROJECTS SHIPPED', '7'],
-  ];
-  cells.forEach(([label, value], i) => {
-    const x = PAD + (i % 2) * cellW + (i % 2 ? 28 : 0);
-    const y = gridTop + Math.floor(i / 2) * cellH + 50;
-    fact(b, x, y, label, value, 52);
-  });
-
-  b.font = `600 15px ${MONO}`;
+  b.fillRect(PAD, 874, inner, 3);
+  b.font = `700 28px ${MONO}`;
   b.fillStyle = MUTED;
-  b.fillText('FIND ME', PAD, 820);
-  b.font = `500 25px ${MONO}`;
-  b.fillStyle = TEXT;
-  b.fillText('github.com/DSurya11', PAD, 864);
-  b.fillText('suryadantuluri2005@gmail.com', PAD, 906);
+  b.fillText('VALID THROUGH MAY 2027', PAD, 936);
 
-  // ── Strap: the name in small, widely spaced letters, repeating ──
+  // ── Strap: the name in widely spaced letters, repeating ──
   const font = `600 46px ${SANS}`;
   const label = 'SURYA DANTULURI';
   const gap = 90;
@@ -186,5 +162,9 @@ export async function makeBadgeFaces() {
   s.arc(tile - 4, 96, 5, 0, Math.PI * 2);
   s.fill();
 
-  return { front: front.toDataURL('image/png'), back: back.toDataURL('image/png'), strap: strap.toDataURL('image/png') };
+  // toBlob encodes off the main thread (toDataURL blocks it for ~100 ms per face).
+  const url = (c: HTMLCanvasElement) =>
+    new Promise<string>((resolve) => c.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : c.toDataURL()), 'image/png'));
+  const [frontUrl, backUrl, strapUrl] = await Promise.all([url(front), url(back), url(strap)]);
+  return { front: frontUrl, back: backUrl, strap: strapUrl };
 }

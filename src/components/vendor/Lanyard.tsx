@@ -3,6 +3,8 @@
 // MIT + Commons Clause licence: free to use in a website, not to resell.
 // Local change: pointer input is read on the window and the canvas ignores pointer events, so
 // the canvas can cover a whole section (the card never clips) without blocking what's under it.
+// Also: shaders are compiled with compileAsync before the first draw (and the canvas fades in),
+// so building the scene doesn't freeze the page while someone is scrolling.
 /* eslint-disable */
 
 import { useEffect, useRef } from 'react';
@@ -33,6 +35,8 @@ export interface LanyardProps {
   cornerRadius?: number;
   size?: number;
   anchor?: Anchor;
+  /** Local addition: how far below the canvas top the strap hangs from, as a fraction of its height. */
+  anchorDrop?: number;
   strapLength?: number;
   strapImage?: string;
   strapColor?: string;
@@ -58,6 +62,7 @@ interface Settings {
   cornerRadius: number;
   size: number;
   anchor: Anchor;
+  anchorDrop: number;
   strapLength: number;
   strapImage?: string;
   strapColor: string;
@@ -882,6 +887,7 @@ const Lanyard = ({
   cornerRadius = 0.3,
   size = 0.6,
   anchor = 'center',
+  anchorDrop = 0,
   strapLength = 0.5,
   strapImage,
   strapColor = '#111111',
@@ -910,6 +916,7 @@ const Lanyard = ({
     cornerRadius,
     size,
     anchor,
+    anchorDrop,
     strapLength,
     strapImage,
     strapColor,
@@ -1090,7 +1097,12 @@ const Lanyard = ({
       if (viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;
       const viewWidth = viewHeight * aspect;
       camera.aspect = aspect;
-      camera.position.set(0, 0, viewHeight / 2 / Math.tan((FOV * Math.PI) / 360));
+      const distance = viewHeight / 2 / Math.tan((FOV * Math.PI) / 360);
+      camera.position.set(0, 0, distance);
+      // Depth range fitted to the camera distance (local change): a tall canvas pushes the
+      // camera far back, and a fixed 0.1–200 range made the card face z-fight with its body.
+      camera.near = distance * 0.4;
+      camera.far = distance * 2.5;
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
       camera.updateMatrixWorld();
@@ -1098,7 +1110,7 @@ const Lanyard = ({
       foilUniforms.foilFill.value.set(3, -1, 4).normalize().transformDirection(camera.matrixWorldInverse);
       foilUniforms.foilTop.value.set(0.5, 4.5, 8).normalize().transformDirection(camera.matrixWorldInverse);
       const anchorX = ((ANCHORS[s.anchor] ?? 0.5) - 0.5) * viewWidth;
-      const anchorY = viewHeight / 2 + 0.2;
+      const anchorY = viewHeight / 2 + 0.2 - viewHeight * clamp(s.anchorDrop, 0, 0.9);
       const cardTop = viewHeight / 2 - viewHeight * mix(0.12, 0.42, clamp(s.strapLength, 0, 1));
       const hangTop = cardTop + (layout.hangY - layout.height / 2);
       sim.anchor.set(anchorX, anchorY, 0);
@@ -1125,7 +1137,7 @@ const Lanyard = ({
         ring.position.set(0, layout.ringY, 0);
         applied.framingKey = '';
       }
-      const framingKey = `${layoutKey}|${s.size}|${s.anchor}|${s.strapLength}|${view.width}|${view.height}`;
+      const framingKey = `${layoutKey}|${s.size}|${s.anchor}|${s.anchorDrop}|${s.strapLength}|${view.width}|${view.height}`;
       if (framingKey !== applied.framingKey) {
         frameView();
         if (!placed) {
@@ -1265,7 +1277,9 @@ const Lanyard = ({
       clampGroup.position.copy(hang);
     };
 
+    let compiled = false;
     const render = () => {
+      if (!compiled) return;
       cardGroup.position.copy(sim.body.position);
       cardGroup.quaternion.copy(sim.body.quaternion);
       updateBand();
@@ -1448,7 +1462,17 @@ const Lanyard = ({
     document.addEventListener('visibilitychange', onVisibility);
 
     applyRef.current = apply;
+    canvas.style.opacity = '0';
+    canvas.style.transition = 'opacity 0.6s ease';
     resize();
+    const reveal = () => {
+      if (!alive) return;
+      compiled = true;
+      canvas.style.opacity = '1';
+      render();
+      start();
+    };
+    renderer.compileAsync(scene, camera).then(reveal, reveal);
 
     return () => {
       alive = false;
