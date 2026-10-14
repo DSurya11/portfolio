@@ -58,8 +58,16 @@ function FlipCard({ ach, play }: { ach: Achievement; play: boolean }) {
   // so it shows through faintly (mirrored) while the side facing you stays crisp. Each face sits
   // 1px toward its own side so the facing one is always drawn in front.
   const face =
-    'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center bg-[#0b0b12]/[0.8] transition-[opacity,filter] duration-500';
-  const away = { opacity: 0.6, filter: 'blur(4.5px)', pointerEvents: 'none' as const };
+    'absolute inset-0 flex flex-col items-center rounded-2xl border p-7 text-center bg-[#0b0b12]/[0.8] transition-[opacity,filter] duration-500 [clip-path:inset(0_round_1rem)]';
+  // The far side keeps only its (blurred) text: no border or fill of its own, or the card would
+  // show a second, fuzzy border. The clip keeps the blur inside the card's corners.
+  const away = {
+    opacity: 0.6,
+    filter: 'blur(4.5px)',
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+    pointerEvents: 'none' as const,
+  };
 
   return (
     <div
