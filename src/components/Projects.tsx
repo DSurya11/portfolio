@@ -86,18 +86,16 @@ export default function Projects() {
         >
           {projects.map((project, i) => (
             <div key={project.title} className="project-slot mx-auto w-full max-w-xl lg:w-[24rem] will-change-transform">
-              <Tilt max={9} className="h-full">
+              <Tilt max={6} className="h-full">
                 <article
                   onClick={(e) => {
                     if ((e.target as HTMLElement).closest('a')) return;
                     openAt(i, e.currentTarget);
                   }}
-                  className="group flex h-full cursor-pointer flex-col rounded-2xl border border-white/10 bg-[#0d0d15]/90 p-4 backdrop-blur-md transition-colors duration-300 hover:border-white/20 hover:bg-[#12121c]/95 [transform-style:preserve-3d]"
+                  className="group flex h-full cursor-pointer flex-col rounded-2xl border border-white/10 bg-[#0d0d15] p-4 transition-colors duration-300 hover:border-white/[0.18] hover:bg-[#11111a]"
                 >
-                  <div className="[transform:translateZ(30px)]">
-                    <ProjectCover index={i} accent={project.accent} title={project.title} />
-                  </div>
-                  <div className="flex flex-1 flex-col px-1 pt-5 [transform:translateZ(45px)]">
+                  <ProjectCover index={i} accent={project.accent} title={project.title} />
+                  <div className="flex flex-1 flex-col px-1 pt-5">
                     <h3 className="mb-2 text-lg font-bold leading-snug text-white">{project.title}</h3>
                     <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-slate-400">{project.description}</p>
                     <div className="mb-5 flex flex-wrap gap-1.5">

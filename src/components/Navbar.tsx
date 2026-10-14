@@ -90,7 +90,7 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-        <motion.div style={{ scaleX: progress }} className="absolute bottom-0 left-0 right-0 h-px origin-left bg-gradient-to-r from-[#00d4ff] to-[#7c3aed]" />
+        <motion.div style={{ scaleX: progress }} className="absolute bottom-0 left-0 right-0 h-px origin-left bg-slate-300/50" />
       </motion.nav>
 
       <AnimatePresence>

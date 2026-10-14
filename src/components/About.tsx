@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { MapPin, Mail, Hand } from 'lucide-react';
 import { SectionHeading } from './fx/SectionHeading';
-import { makeBadgeFaces, BADGE_COLORS, type BadgeDesign } from './badge';
+import { makeBadgeFaces, BADGE_COLOR } from './badge';
 import { Boundary } from './fx/Boundary';
 import { useNear } from '../lib/useNear';
 import { gsap, SplitText, useGSAP, reducedMotion } from '../lib/motion';
@@ -22,11 +22,9 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
   const [height, setHeight] = useState(900);
   // Only build the card (and load three.js for it) once the section is close to the screen.
   const near = useNear(section, '200px');
-  // While choosing a design: ?card=terminal | pass | editorial
-  const design = (new URLSearchParams(window.location.search).get('card') as BadgeDesign | null) ?? 'pass';
   useEffect(() => {
-    if (near) makeBadgeFaces(design in BADGE_COLORS ? design : 'pass').then(setFaces);
-  }, [near, design]);
+    if (near) makeBadgeFaces().then(setFaces);
+  }, [near]);
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
     const onChange = () => setWide(mq.matches);
@@ -58,7 +56,7 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
             backImage={faces.back}
             strapImage={faces.strap}
             finish="glossy"
-            cardColor={BADGE_COLORS[design] ?? BADGE_COLORS.pass}
+            cardColor={BADGE_COLOR}
             strapColor="#10141c"
             metal="silver"
             anchor={wide ? 'right' : 'center'}
