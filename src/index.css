@@ -147,3 +147,50 @@ body {
 @media (min-width: 1280px) { .page-x { padding-inline: 3.5rem; } }
 
 @keyframes loadbar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Split-flap tiles (Achievements). A tile is two halves split by a hinge line; the animated
+   halves fold around that hinge. */
+.flap {
+  position: relative;
+  display: inline-block;
+  width: 0.72em;
+  height: 1.12em;
+  perspective: 3.5em;
+  line-height: 1;
+}
+.flap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 1px);
+  height: 2px;
+  background: #000;
+  z-index: 3;
+}
+.flap-half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1b1b23, #14141b);
+  backface-visibility: hidden;
+}
+.flap-half > span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 200%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flap-top { top: 0; border-radius: 0.09em 0.09em 0 0; transform-origin: 50% 100%; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.flap-top > span { top: 0; }
+.flap-bottom { bottom: 0; border-radius: 0 0 0.09em 0.09em; transform-origin: 50% 0%; background: linear-gradient(180deg, #121219, #17171f); }
+.flap-bottom > span { bottom: 0; }
+.flap-fold { z-index: 2; animation: flap-fold var(--flap-ms) ease-in forwards; }
+.flap-drop { z-index: 2; transform: rotateX(90deg); animation: flap-drop var(--flap-ms) ease-out var(--flap-ms) forwards; }
+@keyframes flap-fold { from { transform: rotateX(0deg); filter: brightness(1); } to { transform: rotateX(-90deg); filter: brightness(0.55); } }
+@keyframes flap-drop { from { transform: rotateX(90deg); filter: brightness(1.4); } to { transform: rotateX(0deg); filter: brightness(1); } }

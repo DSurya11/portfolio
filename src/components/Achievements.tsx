@@ -1,9 +1,8 @@
-import { useRef } from 'react';
-import { useInView } from 'framer-motion';
+import { useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { SectionHeading } from './fx/SectionHeading';
-import { SlidingNumber } from './fx/SlidingNumber';
-import { gsap, useGSAP, reducedMotion } from '../lib/motion';
+import { SplitFlap } from './fx/SplitFlap';
+import { gsap, useGSAP, ScrollTrigger, reducedMotion } from '../lib/motion';
 
 const achievements = [
   {
@@ -35,31 +34,31 @@ const achievements = [
   },
 ];
 
-// A scoreboard: three columns between hairlines, everything readable at once. The only motion
-// is the columns rising in and the ratings rolling up like an odometer.
+// A scoreboard in one framed panel. As it scrolls in, the panel stands up from lying almost
+// flat (rotateX, scroll-scrubbed) with its columns coming forward in depth; once it faces you,
+// the ratings flip into place on split-flap tiles. Clicking a rating replays its flaps.
 export default function Achievements() {
   const ref = useRef<HTMLElement>(null);
   const board = useRef<HTMLDivElement>(null);
-  const inView = useInView(board, { once: true, margin: '-120px' });
+  const [runs, setRuns] = useState<number[]>(() => achievements.map(() => 0));
+  const playAll = () => setRuns((r) => r.map((n) => n + 1));
+  const replay = (i: number) => setRuns((r) => r.map((n, j) => (j === i ? n + 1 : n)));
 
   useGSAP(
     () => {
       if (reducedMotion()) return;
-      gsap.from('.score-col', {
-        y: 36,
-        opacity: 0,
-        stagger: 0.12,
-        duration: 1,
-        ease: 'expo.out',
-        scrollTrigger: { trigger: board.current, start: 'top 82%', once: true },
-      });
-      gsap.from('.score-rule', {
-        scaleX: 0,
-        transformOrigin: '0% 50%',
-        duration: 1.4,
-        ease: 'expo.out',
-        scrollTrigger: { trigger: board.current, start: 'top 82%', once: true },
-      });
+      const stand = { trigger: board.current, start: 'top 98%', end: 'top 45%', scrub: 0.6 };
+      gsap.fromTo(
+        board.current,
+        { rotateX: 62, y: 120, opacity: 0.15, transformPerspective: 1400, transformOrigin: '50% 100%' },
+        { rotateX: 0, y: 0, opacity: 1, ease: 'power2.out', scrollTrigger: stand },
+      );
+      gsap.fromTo(
+        '.score-col',
+        { z: -160, opacity: 0, transformPerspective: 1400 },
+        { z: 0, opacity: 1, stagger: 0.15, ease: 'power2.out', scrollTrigger: stand },
+      );
+      ScrollTrigger.create({ trigger: board.current, start: 'top 45%', once: true, onEnter: playAll });
     },
     { scope: ref },
   );
@@ -71,15 +70,12 @@ export default function Achievements() {
           <span className="text-[#00d4ff]">Achievements</span>
         </SectionHeading>
 
-        <div ref={board}>
-          <div className="score-rule h-px bg-white/15" />
+        <div ref={board} className="rounded-2xl border border-white/15 bg-[#07070b]">
           <div className="grid md:grid-cols-3">
             {achievements.map((a, i) => (
               <div
                 key={a.platform}
-                className={`score-col flex flex-col py-10 md:px-10 ${i > 0 ? 'border-t border-white/10 md:border-l md:border-t-0' : ''} ${
-                  i === 0 ? 'md:pl-0' : ''
-                } ${i === achievements.length - 1 ? 'md:pr-0' : ''}`}
+                className={`score-col flex flex-col px-6 py-10 sm:px-10 ${i > 0 ? 'border-t border-white/10 md:border-l md:border-t-0' : ''}`}
               >
                 <div className="flex items-baseline justify-between gap-4">
                   <p className="font-mono text-xs uppercase tracking-[0.25em] text-slate-400">{a.platform}</p>
@@ -88,8 +84,8 @@ export default function Achievements() {
                   </p>
                 </div>
 
-                <div className="mt-8 text-7xl font-black leading-none tracking-tight text-white sm:text-8xl">
-                  <SlidingNumber value={a.rating} play={inView} />
+                <div className="mt-8 text-6xl font-black leading-none text-white sm:text-7xl xl:text-8xl">
+                  <SplitFlap value={a.rating} play={runs[i]} onReplay={() => replay(i)} />
                 </div>
                 <div className="mt-4 flex items-center gap-3">
                   <span className="h-px w-6" style={{ backgroundColor: a.accent }} />
@@ -114,7 +110,6 @@ export default function Achievements() {
               </div>
             ))}
           </div>
-          <div className="score-rule h-px bg-white/15" />
         </div>
       </div>
     </section>
