@@ -1110,7 +1110,9 @@ const Lanyard = ({
       foilUniforms.foilFill.value.set(3, -1, 4).normalize().transformDirection(camera.matrixWorldInverse);
       foilUniforms.foilTop.value.set(0.5, 4.5, 8).normalize().transformDirection(camera.matrixWorldInverse);
       const anchorX = ((ANCHORS[s.anchor] ?? 0.5) - 0.5) * viewWidth;
-      const anchorY = viewHeight / 2 + 0.2 - viewHeight * clamp(s.anchorDrop, 0, 0.9);
+      // With anchorDrop the strap ends exactly at the drop line (where the page draws a hook);
+      // otherwise it starts just above the canvas edge, as upstream does.
+      const anchorY = s.anchorDrop > 0 ? viewHeight / 2 - viewHeight * clamp(s.anchorDrop, 0, 0.9) : viewHeight / 2 + 0.2;
       const cardTop = viewHeight / 2 - viewHeight * mix(0.12, 0.42, clamp(s.strapLength, 0, 1));
       const hangTop = cardTop + (layout.hangY - layout.height / 2);
       sim.anchor.set(anchorX, anchorY, 0);

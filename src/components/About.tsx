@@ -81,10 +81,26 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
     </div>
   );
 
-  if (wide) return card;
+  // The hook the strap hangs from, so lifting the card never shows the strap starting in mid-air.
+  const hook = faces && (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute top-0 z-10 h-3.5 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15 bg-gradient-to-b from-[#4a505a] to-[#1d2026] shadow-[0_2px_6px_rgba(0,0,0,0.6)]"
+      style={{ left: wide ? '73%' : '50%' }}
+    />
+  );
+
+  if (wide)
+    return (
+      <>
+        {card}
+        {hook}
+      </>
+    );
   return (
     <div ref={box} className="page-x relative mt-4 h-[520px] sm:h-[600px]">
       {card}
+      {hook}
       <p className="pointer-events-none absolute left-6 top-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-slate-500">
         <Hand size={14} /> Drag the card
       </p>
