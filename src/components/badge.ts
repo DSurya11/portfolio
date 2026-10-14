@@ -134,12 +134,12 @@ export async function makeBadgeFaces() {
   };
   line(520, 'EMAIL', 'suryadantuluri2005@gmail.com');
   line(660, 'GITHUB', 'github.com/DSurya11');
-  line(800, 'LINKEDIN', 'in/surya-dantuluri');
+  line(800, 'LINKEDIN', 'in/surya-dantuluri-2a2b4a280');
   b.fillStyle = FAINT;
   b.fillRect(PAD, 874, inner, 3);
   b.font = `700 28px ${MONO}`;
   b.fillStyle = MUTED;
-  b.fillText('VALID THROUGH MAY 2027', PAD, 936);
+  b.fillText('BATCH 2023 – 2027', PAD, 936);
 
   // ── Strap: the name in widely spaced letters, repeating ──
   const font = `600 46px ${SANS}`;
