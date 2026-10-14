@@ -261,7 +261,7 @@ export function IconCloud({
   }, [items, groupColors]);
 
   return (
-    <div ref={wrap} className="relative aspect-square w-full" data-cursor="grab">
+    <div ref={wrap} className="relative aspect-square w-full">
       <canvas
         ref={canvas}
         role="img"

@@ -44,28 +44,6 @@ body {
   100% { background-position: 0 0; }
 }
 
-/* Custom cursor (fine pointers only; the component adds .has-cursor). */
-.has-cursor, .has-cursor * { cursor: none !important; }
-.cursor-dot, .cursor-ring {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 100;
-  pointer-events: none;
-  border-radius: 9999px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: #00d4ff; }
-.cursor-ring {
-  width: 34px;
-  height: 34px;
-  margin: -17px 0 0 -17px;
-  border: 1px solid rgba(0, 212, 255, 0.55);
-  transition: opacity 0.3s, background-color 0.3s, border-color 0.3s;
-}
-.cursor-ring.is-hot { background: rgba(0, 212, 255, 0.08); border-color: rgba(0, 212, 255, 0.9); }
-
 @keyframes blink { 50% { opacity: 0; } }
 @keyframes scrolldot {
   0% { transform: translate(-50%, 0); opacity: 1; }

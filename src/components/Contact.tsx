@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { TextPressure } from './fx/TextPressure';
+import { FillHeading } from './fx/FillHeading';
 import { Decrypt } from './fx/Decrypt';
 import { Keyboard } from './Keyboard';
 
@@ -14,7 +14,9 @@ export default function Contact() {
         <p className="mb-4 text-center font-mono text-sm uppercase tracking-widest text-[#00d4ff]">
           <Decrypt text="Say hello" />
         </p>
-        <TextPressure text="Let's Connect" className="mb-10" />
+        <div className="mb-10">
+          <FillHeading lead="Let's" accent="Connect" />
+        </div>
 
         <motion.p
           initial={{ opacity: 0, y: 24 }}

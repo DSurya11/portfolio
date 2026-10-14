@@ -162,7 +162,7 @@ export default function Certifications() {
           <span className="text-[#00d4ff]">Certifications</span>
         </SectionHeading>
 
-        <div className="relative mx-auto h-[420px] select-none [perspective:1500px] touch-pan-y" data-cursor="grab">
+        <div className="relative mx-auto h-[420px] select-none [perspective:1500px] touch-pan-y">
           <div ref={ring} className="absolute left-1/2 top-1/2 h-0 w-0 [transform-style:preserve-3d]">
             {certs.map((cert, i) => (
               <a

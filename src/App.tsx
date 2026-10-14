@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import { Cursor } from './components/fx/Cursor';
 import { startSmoothScroll } from './lib/scroll';
 import { useIdle } from './lib/useIdle';
 
@@ -15,7 +14,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-slate-100">
       <div aria-hidden className="grain" />
-      <Cursor />
       <Navbar />
       <div className="relative z-10">
         <Hero />

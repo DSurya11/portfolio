@@ -10,7 +10,7 @@ const Lanyard = lazy(() => import('./vendor/Lanyard'));
 
 function Badge() {
   const ref = useRef<HTMLDivElement>(null);
-  const [faces, setFaces] = useState<{ front: string; back: string } | null>(null);
+  const [faces, setFaces] = useState<{ front: string; back: string; strap: string } | null>(null);
   // Only build the card (and load three.js for it) once the section is close to the screen.
   const near = useNear(ref, '200px');
   useEffect(() => {
@@ -18,16 +18,17 @@ function Badge() {
   }, [near]);
 
   return (
-    <div ref={ref} className="relative h-[520px] sm:h-[600px] w-full" data-cursor="grab">
+    <div ref={ref} className="relative h-[520px] sm:h-[600px] w-full">
       {faces && (
         <Boundary>
           <Suspense fallback={null}>
             <Lanyard
               frontImage={faces.front}
               backImage={faces.back}
-              finish="holographic"
-              cardColor="#0b0b12"
-              strapColor="#0e7490"
+              strapImage={faces.strap}
+              finish="glossy"
+              cardColor="#f5f6f8"
+              strapColor="#10141c"
               metal="silver"
               size={0.64}
               strapLength={0.55}
