@@ -92,8 +92,7 @@ export default function Projects() {
                     if ((e.target as HTMLElement).closest('a')) return;
                     openAt(i, e.currentTarget);
                   }}
-                  className="group flex h-full cursor-pointer flex-col rounded-2xl border border-white/10 bg-[#0d0d15]/90 p-4 backdrop-blur-md transition-colors duration-300 hover:border-[color:var(--acc)] [transform-style:preserve-3d]"
-                  style={{ ['--acc' as string]: `${project.accent}99` }}
+                  className="group flex h-full cursor-pointer flex-col rounded-2xl border border-white/10 bg-[#0d0d15]/90 p-4 backdrop-blur-md transition-colors duration-300 hover:border-white/20 hover:bg-[#12121c]/95 [transform-style:preserve-3d]"
                 >
                   <div className="[transform:translateZ(30px)]">
                     <ProjectCover index={i} accent={project.accent} title={project.title} />

@@ -39,15 +39,18 @@ function barcode(ctx: Ctx, x: number, y: number, w: number, h: number, ink: stri
   }
 }
 
-// Draws the cut-out photo so `scaleToWidth` of the frame is covered, top offset by `dy`.
-function photo(ctx: Ctx, img: HTMLImageElement | null, x: number, y: number, w: number, h: number, widthFactor: number, dy: number) {
+// Fills the frame with the photo (like CSS object-fit: cover). `focusY` picks which part of
+// the photo's height stays in view when it is cropped: 0 = top, 0.5 = middle.
+function photo(ctx: Ctx, img: HTMLImageElement | null, x: number, y: number, w: number, h: number, focusY = 0.3) {
   if (!img) return;
+  const scale = Math.max(w / img.width, h / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
   ctx.save();
   ctx.beginPath();
   ctx.rect(x, y, w, h);
   ctx.clip();
-  const scale = (w * widthFactor) / img.width;
-  ctx.drawImage(img, x + (w - img.width * scale) / 2, y + dy, img.width * scale, img.height * scale);
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) * focusY, dw, dh);
   ctx.restore();
 }
 
@@ -134,7 +137,7 @@ function terminal(img: HTMLImageElement | null) {
   g.addColorStop(1, '#141c26');
   f.fillStyle = g;
   f.fillRect(50, 200, 200, 200);
-  photo(f, img, 50, 200, 200, 200, 1.5, 6);
+  photo(f, img, 50, 200, 200, 200, 0.25);
   f.restore();
   f.strokeStyle = '#00d4ff';
   f.lineWidth = 4;
@@ -207,10 +210,13 @@ function pass(img: HTMLImageElement | null) {
   f.fillStyle = g;
   f.fillRect(0, 0, W, split);
   // Big faint initials behind the photo.
-  f.font = `900 420px ${SANS}`;
-  f.fillStyle = 'rgba(255,255,255,0.16)';
-  f.fillText('DS', 20, 560);
-  photo(f, img, 0, 0, W, split, 1.05, 150);
+  photo(f, img, 0, 0, W, split, 0.2);
+  // A soft fade at the top keeps the corner labels readable over the sky.
+  const shade = f.createLinearGradient(0, 0, 0, 170);
+  shade.addColorStop(0, 'rgba(255,255,255,0.55)');
+  shade.addColorStop(1, 'rgba(255,255,255,0)');
+  f.fillStyle = shade;
+  f.fillRect(0, 0, W, 170);
   f.fillStyle = '#0b0b12';
   f.fillRect(0, split, W, H - split);
   // Labels sit in the top corners, either side of the clip's slot, clear of the photo.
@@ -286,7 +292,7 @@ function editorial(img: HTMLImageElement | null) {
   const ph = 560;
   f.fillStyle = '#d8d1c4';
   f.fillRect(px, py, pw, ph);
-  photo(f, img, px, py, pw, ph, 1.25, 40);
+  photo(f, img, px, py, pw, ph, 0.25);
   f.save();
   f.translate(W - 50, py + ph);
   f.rotate(-Math.PI / 2);
@@ -343,7 +349,7 @@ function editorial(img: HTMLImageElement | null) {
 export const BADGE_COLORS: Record<BadgeDesign, string> = { terminal: '#0d1117', pass: '#0b0b12', editorial: '#efebe4' };
 
 export async function makeBadgeFaces(design: BadgeDesign) {
-  const img = await loadImage('/surya-cutout.webp');
+  const img = await loadImage('/surya-id.webp');
   const made = design === 'terminal' ? terminal(img) : design === 'editorial' ? editorial(img) : pass(img);
   return { front: made.front.toDataURL('image/png'), back: made.back.toDataURL('image/png'), strap: made.strap };
 }
