@@ -161,7 +161,7 @@ export default function Achievements() {
 
   return (
     <section id="achievements" ref={ref} className="relative py-24 pb-40">
-      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-10">
+      <div className="page-x relative z-10">
         <SectionHeading eyebrow="Competitive programming">
           <span className="text-[#00d4ff]">Achievements</span>
         </SectionHeading>

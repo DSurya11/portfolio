@@ -140,3 +140,8 @@ body {
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 -2px 0 rgba(0, 0, 0, 0.12) inset;
 }
 .keycap-accent .keycap-legend { color: #06505e; }
+
+/* One page width for every section, so content edges line up down the page. */
+.page-x { margin-inline: auto; width: 100%; max-width: 1440px; padding-inline: 1.5rem; }
+@media (min-width: 768px) { .page-x { padding-inline: 2.5rem; } }
+@media (min-width: 1280px) { .page-x { padding-inline: 3.5rem; } }

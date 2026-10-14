@@ -59,7 +59,7 @@ export default function Navbar() {
           scrolled ? 'backdrop-blur-md bg-[#0a0a0f]/70 border-b border-[#00d4ff15]' : 'bg-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+        <div className="page-x">
           <div className="flex items-center justify-between h-16">
             <a href="#hero" onClick={(e) => go(e, '#hero')} className="relative z-[60] text-2xl font-bold tracking-tight">
               <span className="text-[#00d4ff]">D</span>

@@ -44,13 +44,13 @@ export default function Skills() {
 
   return (
     <section id="skills" className="relative py-24">
-      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-10">
+      <div className="page-x relative z-10">
         <SectionHeading eyebrow="What I work with">
           Tech <span className="text-[#00d4ff]">Stack</span>
         </SectionHeading>
 
-        <div className="grid lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-12 items-center">
-          <div ref={cloudRef} className="relative mx-auto w-full max-w-[520px]">
+        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-8">
+          <div ref={cloudRef} className="relative mx-auto w-full max-w-[680px]">
             {near ? <IconCloud items={cloudItems} groupColors={groupColors} highlight={active} /> : <div className="aspect-square w-full" />}
             <p className="mt-2 text-center font-mono text-xs uppercase tracking-widest text-slate-500">Drag to spin · tap a logo</p>
           </div>

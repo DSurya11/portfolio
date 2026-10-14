@@ -78,7 +78,7 @@ export default function Hero() {
       />
 
       {/* Layer 3 (front): the words and actions. */}
-      <div className="hero-copy relative z-20 mx-auto -mt-24 max-w-7xl px-6 pb-14 text-center md:px-8 lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:pb-16 lg:text-left">
+      <div className="hero-copy page-x relative z-20 -mt-24 pb-14 text-center lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:pb-16 lg:text-left">
         <div className="lg:max-w-[34rem]">
           <motion.div {...rise(0.6)}>
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00d4ff55] bg-[#0a0a0f]/80 px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#00d4ff] backdrop-blur sm:text-xs">

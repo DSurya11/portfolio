@@ -1,43 +1,66 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { MapPin, Mail, Hand } from 'lucide-react';
 import { SectionHeading } from './fx/SectionHeading';
-import { makeBadgeFaces } from './badge';
+import { makeBadgeFaces, BADGE_COLORS, type BadgeDesign } from './badge';
 import { Boundary } from './fx/Boundary';
 import { useNear } from '../lib/useNear';
 import { gsap, SplitText, useGSAP, reducedMotion } from '../lib/motion';
 
 const Lanyard = lazy(() => import('./vendor/Lanyard'));
 
-function Badge() {
-  const ref = useRef<HTMLDivElement>(null);
+// On desktop the badge's canvas covers the whole section (pointer input passes through to the
+// text), so the card can be thrown anywhere without being clipped by a box. On phones it
+// hangs in its own block under the text.
+function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
   const [faces, setFaces] = useState<{ front: string; back: string; strap: string } | null>(null);
+  const [wide, setWide] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
+  const [height, setHeight] = useState(900);
   // Only build the card (and load three.js for it) once the section is close to the screen.
-  const near = useNear(ref, '200px');
+  const near = useNear(section, '200px');
+  // While choosing a design: ?card=terminal | pass | editorial
+  const design = (new URLSearchParams(window.location.search).get('card') as BadgeDesign | null) ?? 'pass';
   useEffect(() => {
-    if (near) makeBadgeFaces().then(setFaces);
-  }, [near]);
+    if (near) makeBadgeFaces(design in BADGE_COLORS ? design : 'pass').then(setFaces);
+  }, [near, design]);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => setWide(mq.matches);
+    mq.addEventListener('change', onChange);
+    // The canvas covers the whole section, padding included, so size against that height.
+    const ro = new ResizeObserver(([e]) => setHeight((e.target as HTMLElement).getBoundingClientRect().height));
+    ro.observe(section.current!);
+    return () => {
+      mq.removeEventListener('change', onChange);
+      ro.disconnect();
+    };
+  }, [section]);
 
+  const card = faces && (
+    <Boundary>
+      <Suspense fallback={null}>
+        <Lanyard
+          frontImage={faces.front}
+          backImage={faces.back}
+          strapImage={faces.strap}
+          finish="glossy"
+          cardColor={BADGE_COLORS[design] ?? BADGE_COLORS.pass}
+          strapColor="#10141c"
+          metal="silver"
+          anchor={wide ? 'right' : 'center'}
+          // A touch smaller than the original 600 px box gave (0.64 of it), whatever the section's height.
+          size={wide ? Math.min(0.6, 340 / height) : 0.6}
+          strapLength={wide ? 0.62 : 0.55}
+          breeze={0.6}
+        />
+      </Suspense>
+    </Boundary>
+  );
+
+  if (wide) return <div className="pointer-events-none absolute inset-0 z-20">{card}</div>;
   return (
-    <div ref={ref} className="relative h-[520px] sm:h-[600px] w-full">
-      {faces && (
-        <Boundary>
-          <Suspense fallback={null}>
-            <Lanyard
-              frontImage={faces.front}
-              backImage={faces.back}
-              strapImage={faces.strap}
-              finish="glossy"
-              cardColor="#f5f6f8"
-              strapColor="#10141c"
-              metal="silver"
-              size={0.64}
-              strapLength={0.55}
-              breeze={0.6}
-            />
-          </Suspense>
-        </Boundary>
-      )}
-      <p className="pointer-events-none absolute left-0 top-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-slate-500">
+    <div className="page-x relative mt-4 h-[520px] sm:h-[600px]">
+      {card}
+      <p className="pointer-events-none absolute left-6 top-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-slate-500">
         <Hand size={14} /> Drag the card
       </p>
     </div>
@@ -46,6 +69,7 @@ function Badge() {
 
 export default function About() {
   const bio = useRef<HTMLParagraphElement>(null);
+  const section = useRef<HTMLElement>(null);
 
   useGSAP(() => {
     if (reducedMotion()) return;
@@ -63,8 +87,8 @@ export default function About() {
   });
 
   return (
-    <section id="about" className="relative py-24">
-      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-10">
+    <section id="about" ref={section} className="relative py-24">
+      <div className="page-x relative z-10">
         <SectionHeading eyebrow="Get to know me">
           About <span className="text-[#00d4ff]">Me</span>
         </SectionHeading>
@@ -106,9 +130,15 @@ export default function About() {
             </div>
           </div>
 
-          <Badge />
+          {/* Desktop: the card hangs over this column; the canvas itself is section-wide. */}
+          <div className="relative hidden min-h-[470px] lg:block">
+            <p className="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap font-mono text-xs uppercase tracking-widest text-slate-500">
+              <Hand size={14} /> Drag the card · click to flip
+            </p>
+          </div>
         </div>
       </div>
+      <Badge section={section} />
     </section>
   );
 }

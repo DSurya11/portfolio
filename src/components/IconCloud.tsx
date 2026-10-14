@@ -9,7 +9,6 @@ export type CloudItem = { label: string; group: string; color: string; path?: st
 
 type Placed = { x: number; y: number; z: number; sprite: Sprite; w: number; h: number; item: CloudItem };
 
-const TILE = 58;
 
 function luminance(hex: string) {
   const n = parseInt(hex.slice(1), 16);
@@ -23,50 +22,53 @@ type Sprite = { sx: number; sy: number; w: number; h: number };
 function buildAtlas(items: CloudItem[], groupColors: Record<string, string>, dpr: number) {
   const atlas = document.createElement('canvas');
   const ctx = atlas.getContext('2d')!;
-  ctx.font = '600 15px Inter, system-ui, sans-serif';
-  const sizes = items.map((item) => (item.path ? { w: TILE, h: TILE } : { w: Math.ceil(ctx.measureText(item.label).width) + 26, h: 34 }));
-  const maxW = 640;
+  const font = '600 15px Inter, system-ui, sans-serif';
+  const H = 40;
+  const ICON = 20;
+  ctx.font = font;
+  // Every item is a pill with its logo (when it has one) and its name, so nothing is a mystery icon.
+  const sizes = items.map((item) => ({ w: Math.ceil(ctx.measureText(item.label).width) + (item.path ? 24 + ICON + 10 : 28), h: H }));
+  const maxW = 900;
   const sprites: Sprite[] = [];
   let x = 0;
   let y = 0;
-  let row = 0;
   for (const sz of sizes) {
     if (x + sz.w > maxW) {
       x = 0;
-      y += row + 2;
-      row = 0;
+      y += H + 2;
     }
     sprites.push({ sx: x, sy: y, w: sz.w, h: sz.h });
     x += sz.w + 2;
-    row = Math.max(row, sz.h);
   }
   atlas.width = maxW * dpr;
-  atlas.height = (y + row) * dpr;
+  atlas.height = (y + H) * dpr;
   ctx.scale(dpr, dpr);
   items.forEach((item, i) => {
     const { sx, sy, w, h } = sprites[i];
     const groupColor = groupColors[item.group];
     ctx.save();
     ctx.translate(sx, sy);
-    ctx.fillStyle = '#0d0d16';
-    ctx.strokeStyle = `${groupColor}aa`;
+    ctx.fillStyle = '#101018';
+    ctx.strokeStyle = `${groupColor}99`;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    if (item.path) ctx.roundRect(2, 2, w - 4, h - 4, 14);
-    else ctx.roundRect(1, 1, w - 2, h - 2, 9);
+    ctx.roundRect(1, 1, w - 2, h - 2, 10);
     ctx.fill();
     ctx.stroke();
+    let tx = 14;
     if (item.path) {
-      ctx.translate(w / 2 - 15, h / 2 - 15);
-      ctx.scale(30 / 24, 30 / 24);
-      ctx.fillStyle = luminance(item.color) < 0.28 ? '#e2e8f0' : item.color;
+      ctx.save();
+      ctx.translate(12, (h - ICON) / 2);
+      ctx.scale(ICON / 24, ICON / 24);
+      ctx.fillStyle = luminance(item.color) < 0.3 ? '#e2e8f0' : item.color;
       ctx.fill(new Path2D(item.path));
-    } else {
-      ctx.font = '600 15px Inter, system-ui, sans-serif';
-      ctx.fillStyle = groupColor;
-      ctx.textBaseline = 'middle';
-      ctx.fillText(item.label, 13, h / 2 + 1);
+      ctx.restore();
+      tx = 12 + ICON + 10;
     }
+    ctx.font = font;
+    ctx.fillStyle = '#e8edf3';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(item.label, tx, h / 2 + 1);
     ctx.restore();
   });
   return { atlas, sprites };
@@ -162,7 +164,7 @@ export function IconCloud({
       focusOn(c.x / len, c.y / len, c.z / len);
     };
 
-    const radius = () => size * 0.36;
+    const radius = () => size * 0.38;
 
     const draw = () => {
       raf = requestAnimationFrame(draw);

@@ -10,7 +10,7 @@ export default function Contact() {
 
   return (
     <section id="contact" ref={ref} className="relative pt-24 pb-28">
-      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-10">
+      <div className="page-x relative z-10">
         <p className="mb-4 text-center font-mono text-sm uppercase tracking-widest text-[#00d4ff]">
           <Decrypt text="Say hello" />
         </p>

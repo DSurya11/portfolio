@@ -157,7 +157,7 @@ export default function Certifications() {
 
   return (
     <section id="certifications" ref={section} className="relative py-24 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-0">
-      <div className="relative z-10 max-w-6xl mx-auto w-full px-6 md:px-10">
+      <div className="page-x relative z-10">
         <SectionHeading eyebrow="NPTEL & courses" className="lg:mb-6">
           <span className="text-[#00d4ff]">Certifications</span>
         </SectionHeading>
