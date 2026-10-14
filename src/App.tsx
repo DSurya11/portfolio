@@ -24,7 +24,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-slate-100">
+    <div className="min-h-screen bg-black text-slate-100">
       <Loader />
       <div aria-hidden className="grain" />
       <Navbar />

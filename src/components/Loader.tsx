@@ -17,7 +17,7 @@ export function Loader() {
   return (
     <div
       aria-hidden
-      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0f] transition-opacity duration-[450ms] ${
+      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black transition-opacity duration-[450ms] ${
         ready ? 'pointer-events-none opacity-0' : 'opacity-100'
       }`}
     >

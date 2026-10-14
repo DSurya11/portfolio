@@ -91,7 +91,7 @@ export default function Hero() {
       <div className="hero-copy page-x relative z-20 -mt-24 pb-14 text-center lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:pb-16 lg:text-left">
         <div className="lg:max-w-[34rem]">
           <motion.div {...rise(0.6, ready)}>
-            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00d4ff55] bg-[#0a0a0f]/80 px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#00d4ff] backdrop-blur sm:text-xs">
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00d4ff55] bg-black/80 px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#00d4ff] backdrop-blur sm:text-xs">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d4ff] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d4ff]" />
@@ -127,7 +127,7 @@ export default function Hero() {
               href="https://drive.google.com/file/d/1im7brBirdHxuf1hUdZLaOUYjAk4Ou3UT/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg border border-[#00d4ff77] bg-[#0a0a0f]/70 px-7 py-3.5 text-sm font-semibold text-[#00d4ff] backdrop-blur transition-colors duration-200 hover:bg-[#00d4ff18]"
+              className="rounded-lg border border-[#00d4ff77] bg-black/70 px-7 py-3.5 text-sm font-semibold text-[#00d4ff] backdrop-blur transition-colors duration-200 hover:bg-[#00d4ff18]"
             >
               Download Resume
             </a>
@@ -141,7 +141,7 @@ export default function Hero() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={s.label}
-                className="flex items-center gap-2 rounded-lg border border-[#ffffff20] bg-[#0a0a0f]/75 px-3.5 py-2 text-sm text-slate-400 backdrop-blur transition-colors duration-200 hover:border-[#00d4ff66] hover:text-[#00d4ff]"
+                className="flex items-center gap-2 rounded-lg border border-[#ffffff20] bg-black/75 px-3.5 py-2 text-sm text-slate-400 backdrop-blur transition-colors duration-200 hover:border-[#00d4ff66] hover:text-[#00d4ff]"
               >
                 {s.icon}
                 <span className="hidden sm:inline">{s.label}</span>
