@@ -22,6 +22,7 @@ export default function Projects() {
   const trigger = useRef<ScrollTrigger | null>(null);
   const [active, setActive] = useState(0);
   const bar = useRef<HTMLSpanElement>(null);
+  const fade = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<{
     index: number;
     rect: DOMRect | null;
@@ -50,6 +51,8 @@ export default function Projects() {
             scrub: 0.8,
             invalidateOnRefresh: true,
             onUpdate: (st) => {
+              // The edge fade is only needed once cards start sliding under the index.
+              if (fade.current) fade.current.style.opacity = String(Math.min(1, st.progress * 25));
               if (bar.current) bar.current.style.transform = `scaleX(${Math.max(0.04, st.progress)})`;
               setActive(Math.round(st.progress * (projects.length - 1)));
             },
@@ -99,7 +102,7 @@ export default function Projects() {
 
   return (
     <section id="projects" ref={section} className="relative overflow-x-clip py-24 lg:py-0 motion-reduce:lg:py-24">
-      <div className="page-x relative z-10 lg:flex lg:h-screen lg:items-center lg:gap-14 motion-reduce:lg:h-auto motion-reduce:lg:block">
+      <div className="page-x relative z-10 lg:flex lg:h-screen lg:items-center lg:gap-4 motion-reduce:lg:h-auto motion-reduce:lg:block">
         <div className="lg:hidden motion-reduce:lg:block">
           <SectionHeading eyebrow="What I've built">
             Featured <span className="text-[#00d4ff]">Projects</span>
@@ -149,11 +152,13 @@ export default function Projects() {
         <div className="relative min-w-0 flex-1 lg:[clip-path:inset(-40px_-100vw_-40px_0)] motion-reduce:lg:[clip-path:none]">
           <div
             aria-hidden
+            ref={fade}
+            style={{ opacity: 0 }}
             className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-10 bg-gradient-to-r from-black to-transparent lg:block motion-reduce:lg:hidden"
           />
           <div
             ref={track}
-            className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-7 lg:pl-1 motion-reduce:lg:grid motion-reduce:lg:grid-cols-3"
+            className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-7 lg:pl-10 motion-reduce:lg:grid motion-reduce:lg:grid-cols-3"
           >
             {projects.map((project, i) => (
               <div
