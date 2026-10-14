@@ -36,10 +36,11 @@ export default function Hero() {
     () => {
       if (reducedMotion()) return;
       const split = SplitText.create('.hero-name', { type: 'chars', charsClass: 'split-char', aria: 'none' });
+      // Motion starts a beat after setup, once the page's startup work has finished.
       const intro = gsap.timeline({ defaults: { ease: 'expo.out' } });
       intro
-        .from(split.chars, { yPercent: 105, rotateX: -80, transformOrigin: '50% 100%', stagger: 0.06, duration: 1.4 }, 0.1)
-        .fromTo('.hero-person', { clipPath: 'inset(100% 0% 0% 0%)', y: 60 }, { clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: 1.6 }, 0.35);
+        .from(split.chars, { yPercent: 105, rotateX: -80, transformOrigin: '50% 100%', stagger: 0.06, duration: 1.4 }, 0.35)
+        .fromTo('.hero-person', { clipPath: 'inset(100% 0% 0% 0%)', y: 60 }, { clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: 1.6 }, 0.6);
 
       const out = { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true };
       gsap.to('.hero-name', { yPercent: -18, letterSpacing: '0.04em', ease: 'none', scrollTrigger: out });
