@@ -93,7 +93,7 @@ export default function Hero() {
       <div className="hero-copy page-x relative z-20 -mt-24 pb-14 text-center lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:pb-16 lg:text-left">
         <div className="lg:max-w-[34rem]">
           <motion.div {...rise(0.6, ready)}>
-            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00d4ff55] bg-black/85 px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#00d4ff] sm:text-xs">
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00d4ff55] bg-black/85 px-3 py-1 font-mono text-[11px] uppercase tracking-wide text-[#00d4ff] sm:text-xs sm:tracking-widest">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d4ff] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d4ff]" />

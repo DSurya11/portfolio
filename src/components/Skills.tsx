@@ -56,10 +56,10 @@ export default function Skills() {
           Tech <span className="text-[#00d4ff]">Stack</span>
         </SectionHeading>
 
-        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-8">
-          <div className="relative mx-auto w-full max-w-[680px]">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-8">
+          <div className="relative mx-auto w-full min-w-0 max-w-[680px]">
             <IconCloud items={cloudItems} groupColors={groupColors} highlight={active} />
-            <p className="mt-2 text-center font-mono text-xs uppercase tracking-widest text-slate-500">Drag to spin · tap a logo</p>
+            <p className="mt-2 text-center font-mono text-xs uppercase tracking-wider text-slate-500 sm:tracking-widest">Drag to spin · tap a logo</p>
           </div>
 
           <div className="space-y-2" onMouseLeave={() => setActive(null)}>

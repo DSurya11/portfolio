@@ -222,7 +222,7 @@ export function PlatformStack() {
                 type="button"
                 tabIndex={-1}
                 onClick={() => setSelected(l.id)}
-                className="slab-label absolute flex items-center gap-2 text-left"
+                className="slab-label absolute flex items-center gap-2 py-2.5 text-left sm:py-1"
                 style={{ left: `${(rx / W) * 62}%`, top: `${((restY(i) + ry + T / 2) / H) * 100}%`, opacity: 0 }}
               >
                 <span aria-hidden className={`h-px w-4 shrink-0 sm:w-8 ${on ? 'bg-slate-200' : session ? 'bg-[#22d3ee]/60' : 'bg-slate-600'}`} />

@@ -40,6 +40,7 @@ const achievements = [
 export default function Achievements() {
   const ref = useRef<HTMLElement>(null);
   const board = useRef<HTMLDivElement>(null);
+  const boardWrap = useRef<HTMLDivElement>(null);
   const [runs, setRuns] = useState<number[]>(() => achievements.map(() => 0));
   const playAll = () => setRuns((r) => r.map((n) => n + 1));
   const replay = (i: number) => setRuns((r) => r.map((n, j) => (j === i ? n + 1 : n)));
@@ -49,11 +50,21 @@ export default function Achievements() {
       if (reducedMotion()) return;
       // Plays as a whole once the panel starts to come into view (not tied to scroll position),
       // so it is always fully upright even if the visitor stops scrolling halfway.
-      gsap.set(board.current, { rotateX: 62, y: 120, opacity: 0.15, transformPerspective: 1400, transformOrigin: '50% 100%' });
+      // Phones stack the columns into a tall panel: a gentler tilt, or it looks extreme.
+      const tall = window.matchMedia('(max-width: 767px)').matches;
+      gsap.set(board.current, {
+        rotateX: tall ? 22 : 62,
+        y: tall ? 60 : 120,
+        opacity: 0.15,
+        transformPerspective: 1400,
+        transformOrigin: '50% 100%',
+      });
       gsap.set('.score-col', { z: -160, opacity: 0, transformPerspective: 1400 });
+      // Triggered by the untilted wrapper: the tilted panel's own box sits lower on screen,
+      // which made it start late on phones.
       ScrollTrigger.create({
-        trigger: board.current,
-        start: 'top bottom',
+        trigger: boardWrap.current,
+        start: 'top 64%',
         once: true,
         onEnter: () => {
           gsap
@@ -73,45 +84,50 @@ export default function Achievements() {
           <span className="text-[#00d4ff]">Achievements</span>
         </SectionHeading>
 
-        <div ref={board} className="rounded-2xl border border-white/15 bg-[#07070b]">
-          <div className="grid md:grid-cols-3">
-            {achievements.map((a, i) => (
-              <div
-                key={a.platform}
-                className={`score-col flex flex-col px-6 py-10 sm:px-10 ${i > 0 ? 'border-t border-white/10 md:border-l md:border-t-0' : ''}`}
-              >
-                <div className="flex items-baseline justify-between gap-4">
-                  <p className="font-mono text-xs uppercase tracking-[0.25em] text-slate-400">{a.platform}</p>
-                  <p className="text-sm font-semibold" style={{ color: a.accent }}>
-                    {a.rank}
-                  </p>
-                </div>
-
-                <div className="mt-8 text-6xl font-black leading-none text-white sm:text-7xl xl:text-8xl">
-                  <SplitFlap value={a.rating} play={runs[i]} onReplay={() => replay(i)} />
-                </div>
-                <div className="mt-4 flex items-center gap-3">
-                  <span className="h-px w-6" style={{ backgroundColor: a.accent }} />
-                  <p className="text-xs uppercase tracking-widest text-slate-500">{a.ratingLabel}</p>
-                </div>
-
-                <ul className="mt-8 space-y-2 text-[15px] text-slate-300">
-                  {a.facts.map((f) => (
-                    <li key={f}>{f}</li>
-                  ))}
-                </ul>
-
-                <a
-                  href={a.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group mt-8 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-slate-300 transition-colors hover:text-white"
+        <div ref={boardWrap}>
+          <div ref={board} className="rounded-2xl border border-white/15 bg-[#07070b]">
+            <div className="grid md:grid-cols-3">
+              {achievements.map((a, i) => (
+                <div
+                  key={a.platform}
+                  className={`score-col flex flex-col px-6 py-10 sm:px-10 ${i > 0 ? 'border-t border-white/10 md:border-l md:border-t-0' : ''}`}
                 >
-                  View profile
-                  <ArrowUpRight size={15} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </a>
-              </div>
-            ))}
+                  <div className="flex items-baseline justify-between gap-4">
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] text-slate-400">{a.platform}</p>
+                    <p className="text-sm font-semibold" style={{ color: a.accent }}>
+                      {a.rank}
+                    </p>
+                  </div>
+
+                  <div className="mt-8 text-6xl font-black leading-none text-white sm:text-7xl xl:text-8xl">
+                    <SplitFlap value={a.rating} play={runs[i]} onReplay={() => replay(i)} />
+                  </div>
+                  <div className="mt-4 flex items-center gap-3">
+                    <span className="h-px w-6" style={{ backgroundColor: a.accent }} />
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{a.ratingLabel}</p>
+                  </div>
+
+                  <ul className="mt-8 space-y-2 text-[15px] text-slate-300">
+                    {a.facts.map((f) => (
+                      <li key={f}>{f}</li>
+                    ))}
+                  </ul>
+
+                  <a
+                    href={a.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group -my-2 mt-6 inline-flex w-fit items-center gap-1.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:text-white"
+                  >
+                    View profile
+                    <ArrowUpRight
+                      size={15}
+                      className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    />
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

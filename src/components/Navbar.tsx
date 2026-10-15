@@ -63,7 +63,7 @@ export default function Navbar() {
       >
         <div className="page-x">
           <div className="flex items-center justify-between h-16">
-            <a href="#hero" onClick={(e) => go(e, '#hero')} className="relative z-[60] text-2xl font-bold tracking-tight">
+            <a href="#hero" onClick={(e) => go(e, '#hero')} className="relative z-[60] -m-2 p-2 text-2xl font-bold tracking-tight">
               <span className="text-[#00d4ff]">D</span>
               <span className="text-white">S</span>
             </a>

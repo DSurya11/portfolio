@@ -155,7 +155,7 @@ export default function Projects() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${project.title} on GitHub`}
-                    className="grid h-9 w-9 place-items-center rounded-lg border border-white/15 text-slate-300 hover:border-white/40 hover:text-white"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/15 text-slate-300 hover:border-white/40 hover:text-white"
                   >
                     <GithubIcon size={16} />
                   </a>
@@ -165,7 +165,7 @@ export default function Projects() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${project.title} live demo`}
-                      className="grid h-9 w-9 place-items-center rounded-lg border text-sm"
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border text-sm"
                       style={{
                         borderColor: `${project.accent}77`,
                         color: project.accent,

@@ -242,7 +242,7 @@ export default function About() {
               </div>
               <div className="flex items-center gap-3 text-slate-400">
                 <Mail size={16} className="text-[#00d4ff] shrink-0" />
-                <a href="mailto:suryadantuluri2005@gmail.com" className="hover:text-[#00d4ff] transition-colors">
+                <a href="mailto:suryadantuluri2005@gmail.com" className="-my-2 inline-block py-2 hover:text-[#00d4ff] transition-colors">
                   suryadantuluri2005@gmail.com
                 </a>
               </div>
