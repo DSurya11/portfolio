@@ -84,7 +84,7 @@ export default function Platform() {
   );
 
   return (
-    <section id="platform" ref={ref} className="relative py-24">
+    <section id="platform" ref={ref} className="relative py-24 lg:py-[8.25rem]">
       <div className="page-x relative z-10">
         <SectionHeading eyebrow="Flagship project">
           Internal Developer <span className="text-[#00d4ff]">Platform</span>

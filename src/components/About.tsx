@@ -99,7 +99,7 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
       </>
     );
   return (
-    <div ref={box} className="page-x relative mt-4 h-[520px] sm:h-[600px]">
+    <div ref={box} data-badge-box className="page-x relative mt-4 h-[520px] sm:h-[600px]">
       {card}
       {hook}
       <p className="pointer-events-none absolute left-6 top-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-slate-500">
@@ -129,7 +129,7 @@ export default function About() {
   });
 
   return (
-    <section id="about" ref={section} className="relative py-24">
+    <section id="about" ref={section} className="relative pb-24 pt-[8.5rem] lg:pb-[8.25rem] lg:pt-[16.5rem]">
       <div className="page-x relative z-10">
         <SectionHeading eyebrow="Get to know me">
           About <span className="text-[#00d4ff]">Me</span>

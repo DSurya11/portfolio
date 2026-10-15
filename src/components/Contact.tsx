@@ -9,7 +9,7 @@ export default function Contact() {
   const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section id="contact" ref={ref} className="relative pt-24 pb-28">
+    <section id="contact" ref={ref} className="relative pt-[8.25rem] pb-28 lg:pt-[10.5rem]">
       <div className="page-x relative z-10">
         <p className="mb-4 text-center font-mono text-sm uppercase tracking-widest text-[#00d4ff]">
           <Decrypt text="Say hello" />

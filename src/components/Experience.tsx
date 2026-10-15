@@ -71,7 +71,7 @@ export default function Experience() {
   );
 
   return (
-    <section id="experience" ref={ref} className="relative py-24">
+    <section id="experience" ref={ref} className="relative py-24 lg:py-[8.25rem]">
       <div className="page-x relative z-10">
         <SectionHeading eyebrow="Where I work">
           <span className="text-[#00d4ff]">Experience</span>

@@ -155,7 +155,7 @@ export default function Certifications() {
   };
 
   return (
-    <section id="certifications" ref={section} className="relative pb-24 pt-[8.5rem]">
+    <section id="certifications" ref={section} className="relative pb-24 pt-[8.5rem] lg:pb-[8.25rem] lg:pt-[13.75rem]">
       <div className="page-x relative z-10">
         <SectionHeading eyebrow="NPTEL & courses" className="lg:mb-6">
           <span className="text-[#00d4ff]">Certifications</span>

@@ -142,6 +142,13 @@ export function IconCloud({
       return { x: x1, y: y2, z: z2 };
     };
 
+    // The tilt stops short of the poles: past 90° the sphere would be upside down and
+    // left/right drags would turn it the wrong way.
+    const MAX_TILT = 1.1;
+    const clampTilt = (x: number) => Math.max(-MAX_TILT, Math.min(MAX_TILT, x));
+    // The idle spin keeps going in the direction the visitor last dragged.
+    let spin = 0.0035;
+
     const shortest = (from: number, to: number) => {
       let d = (to - from) % (Math.PI * 2);
       if (d > Math.PI) d -= Math.PI * 2;
@@ -153,7 +160,7 @@ export function IconCloud({
       const ry = Math.atan2(-x, z);
       const z1 = Math.hypot(x, z);
       const rx = Math.atan2(y, z1);
-      target = { x: shortest(rot.x, rx), y: shortest(rot.y, ry) };
+      target = { x: clampTilt(shortest(rot.x, rx)), y: shortest(rot.y, ry) };
     };
 
     focusRef.current = (group) => {
@@ -174,10 +181,10 @@ export function IconCloud({
         rot.y += (target.y - rot.y) * 0.08;
         if (Math.abs(target.x - rot.x) + Math.abs(target.y - rot.y) < 0.002) target = null;
       } else if (!drag && !reduce) {
-        rot.x += vel.x;
+        rot.x = clampTilt(rot.x + vel.x);
         rot.y += vel.y;
         vel.x *= 0.95;
-        vel.y += (0.0035 - vel.y) * 0.02;
+        vel.y += (spin - vel.y) * 0.02;
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, size, size);
@@ -237,8 +244,9 @@ export function IconCloud({
       drag.moved += Math.abs(dx) + Math.abs(dy);
       vel.y = dx * 0.006;
       vel.x = dy * 0.006;
+      if (Math.abs(dx) > 1) spin = Math.sign(dx) * 0.0035;
       rot.y += vel.y;
-      rot.x += vel.x;
+      rot.x = clampTilt(rot.x + vel.x);
     };
     const onUp = (e: PointerEvent) => {
       if (drag && drag.moved < 6) {

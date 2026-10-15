@@ -50,7 +50,7 @@ export default function Skills() {
   const [active, setActive] = useState<string | null>(null);
 
   return (
-    <section id="skills" className="relative py-24">
+    <section id="skills" className="relative py-24 lg:py-[8.25rem]">
       <div className="page-x relative z-10">
         <SectionHeading eyebrow="What I work with">
           Tech <span className="text-[#00d4ff]">Stack</span>
