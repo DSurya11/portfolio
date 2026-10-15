@@ -11,7 +11,7 @@ const typingPhrases = [
   'I build platforms on Kubernetes and AWS',
   'I automate delivery: CI, GitOps, Terraform',
   'I build full-stack and ML systems',
-  'LeetCode Knight | Top 3.5% globally',
+  'LeetCode Knight | Top 3% globally',
 ];
 
 const socialLinks = [

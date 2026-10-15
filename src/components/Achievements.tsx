@@ -9,9 +9,9 @@ const achievements = [
     platform: 'LeetCode',
     rank: 'Knight',
     accent: '#f59e0b',
-    rating: 1948,
+    rating: 1980,
     ratingLabel: 'Contest rating',
-    facts: ['789 problems solved · 41 contests', 'Top 3.34% globally', 'Rank 28,200 / 874,349'],
+    facts: ['835 problems solved · 48 contests', 'Top 2.93% globally', 'Rank 25,171 / 888,637'],
     link: 'https://leetcode.com/u/this_is_surya/',
   },
   {
@@ -20,7 +20,7 @@ const achievements = [
     accent: '#00d4ff',
     rating: 1262,
     ratingLabel: 'Rating',
-    facts: ['30+ contests', 'Div. 2 rated', 'Active in regular rounds'],
+    facts: ['17 rated contests', 'Div. 2 rated', 'Active in regular rounds'],
     link: 'https://codeforces.com/profile/_.surya._',
   },
   {
