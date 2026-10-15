@@ -45,7 +45,7 @@ export default function Projects() {
           ease: 'none',
           scrollTrigger: {
             trigger: section.current,
-            start: 'top top',
+            start: 'center center',
             end: () => `+=${distance() * 1.15}`,
             pin: true,
             scrub: 0.8,
@@ -188,8 +188,8 @@ export default function Projects() {
   );
 
   return (
-    <section id="projects" ref={section} className="relative overflow-x-clip py-24 lg:py-0 motion-reduce:lg:py-24">
-      <div className="page-x relative z-10 lg:flex lg:h-screen lg:items-center lg:gap-4 motion-reduce:lg:h-auto motion-reduce:lg:block">
+    <section id="projects" ref={section} className="relative overflow-x-clip py-24 lg:pt-[8.25rem]">
+      <div className="page-x relative z-10 lg:flex lg:items-center lg:gap-4 motion-reduce:lg:block">
         <div className="lg:hidden motion-reduce:lg:block">
           <SectionHeading eyebrow="Beyond the platform">
             Other Featured <span className="text-[#00d4ff]">Projects</span>

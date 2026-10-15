@@ -113,7 +113,7 @@ export default function Certifications() {
         gsap.to(angle.current, {
           scroll: -STEP * (certs.length - 1),
           ease: 'none',
-          scrollTrigger: { trigger: section.current, start: 'top top', end: '+=160%', pin: true, scrub: 0.6 },
+          scrollTrigger: { trigger: section.current, start: 'center center', end: '+=160%', pin: true, scrub: 0.6 },
         });
       });
     },
@@ -155,7 +155,7 @@ export default function Certifications() {
   };
 
   return (
-    <section id="certifications" ref={section} className="relative py-24 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-0">
+    <section id="certifications" ref={section} className="relative pb-24 pt-[8.5rem]">
       <div className="page-x relative z-10">
         <SectionHeading eyebrow="NPTEL & courses" className="lg:mb-6">
           <span className="text-[#00d4ff]">Certifications</span>
