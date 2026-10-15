@@ -9,15 +9,12 @@ export function FillHeading({ lead, accent }: { lead: string; accent: string }) 
   useGSAP(
     () => {
       if (reducedMotion()) return;
-      gsap.fromTo(
-        '.fill-layer',
-        { clipPath: 'inset(0% 100% 0% 0%)' },
-        {
-          clipPath: 'inset(0% 0% 0% 0%)',
-          ease: 'none',
-          scrollTrigger: { trigger: ref.current, start: 'clamp(top 85%)', end: 'clamp(top 40%)', scrub: 0.4 },
-        },
-      );
+      // A window slides right over the solid text while the text slides the opposite way inside
+      // it, so the letters stay put and are revealed left to right. Both are transforms, so the
+      // browser only moves layers (animating a clip shape repainted the text every frame).
+      const scrollTrigger = { trigger: ref.current, start: 'clamp(top 85%)', end: 'clamp(top 40%)', scrub: 0.4 };
+      gsap.fromTo('.fill-window', { xPercent: -100 }, { xPercent: 0, ease: 'none', scrollTrigger });
+      gsap.fromTo('.fill-layer', { xPercent: 100 }, { xPercent: 0, ease: 'none', scrollTrigger });
     },
     { scope: ref },
   );
@@ -37,7 +34,9 @@ export function FillHeading({ lead, accent }: { lead: string; accent: string }) 
         <p aria-hidden className={`${type} text-transparent [-webkit-text-stroke:1.5px_#334155]`}>
           {text(true)}
         </p>
-        <h2 className={`fill-layer absolute inset-0 ${type}`}>{text(false)}</h2>
+        <div className="fill-window absolute inset-0 overflow-hidden will-change-transform">
+          <h2 className={`fill-layer will-change-transform ${type}`}>{text(false)}</h2>
+        </div>
       </div>
     </div>
   );

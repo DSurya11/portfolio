@@ -24,9 +24,8 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-slate-100">
+    <div className="page-grain min-h-screen text-slate-100">
       <Loader />
-      <div aria-hidden className="grain" />
       <Navbar />
       <div className="relative z-10">
         <Hero />

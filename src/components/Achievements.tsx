@@ -34,8 +34,8 @@ const achievements = [
   },
 ];
 
-// A scoreboard in one framed panel. As it scrolls in, the panel stands up from lying almost
-// flat (rotateX, scroll-scrubbed) with its columns coming forward in depth; once it faces you,
+// A scoreboard in one framed panel. As it comes into view, the panel stands up from lying almost
+// flat (rotateX) with its columns coming forward in depth; once it faces you,
 // the ratings flip into place on split-flap tiles. Clicking a rating replays its flaps.
 export default function Achievements() {
   const ref = useRef<HTMLElement>(null);
@@ -47,18 +47,21 @@ export default function Achievements() {
   useGSAP(
     () => {
       if (reducedMotion()) return;
-      const stand = { trigger: board.current, start: 'top 98%', end: 'top 45%', scrub: 0.6 };
-      gsap.fromTo(
-        board.current,
-        { rotateX: 62, y: 120, opacity: 0.15, transformPerspective: 1400, transformOrigin: '50% 100%' },
-        { rotateX: 0, y: 0, opacity: 1, ease: 'power2.out', scrollTrigger: stand },
-      );
-      gsap.fromTo(
-        '.score-col',
-        { z: -160, opacity: 0, transformPerspective: 1400 },
-        { z: 0, opacity: 1, stagger: 0.15, ease: 'power2.out', scrollTrigger: stand },
-      );
-      ScrollTrigger.create({ trigger: board.current, start: 'top 45%', once: true, onEnter: playAll });
+      // Plays as a whole once the panel starts to come into view (not tied to scroll position),
+      // so it is always fully upright even if the visitor stops scrolling halfway.
+      gsap.set(board.current, { rotateX: 62, y: 120, opacity: 0.15, transformPerspective: 1400, transformOrigin: '50% 100%' });
+      gsap.set('.score-col', { z: -160, opacity: 0, transformPerspective: 1400 });
+      ScrollTrigger.create({
+        trigger: board.current,
+        start: 'top 92%',
+        once: true,
+        onEnter: () => {
+          gsap
+            .timeline({ onComplete: playAll })
+            .to(board.current, { rotateX: 0, y: 0, opacity: 1, duration: 1.1, ease: 'power3.out' })
+            .to('.score-col', { z: 0, opacity: 1, stagger: 0.12, duration: 0.8, ease: 'power3.out' }, 0.25);
+        },
+      });
     },
     { scope: ref },
   );

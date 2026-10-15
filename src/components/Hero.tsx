@@ -47,7 +47,9 @@ export default function Hero() {
       const off = onReady(() => intro.play());
 
       const out = { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true };
-      gsap.to('.hero-name', { yPercent: -18, letterSpacing: '0.04em', ease: 'none', scrollTrigger: out });
+      // Transform and opacity only while scrolling: anything that changes layout (like letter
+      // spacing on 400px type) has to re-lay-out and repaint the text every frame.
+      gsap.to('.hero-name', { yPercent: -18, scale: 0.96, ease: 'none', scrollTrigger: out });
       gsap.to('.hero-person', { yPercent: -14, scale: 1.04, ease: 'none', scrollTrigger: out });
       gsap.to('.hero-copy', { y: -60, opacity: 0, ease: 'none', scrollTrigger: { ...out, end: '60% top' } });
       return off;
@@ -66,7 +68,7 @@ export default function Hero() {
 
       {/* Layer 1 (back): the name. */}
       <div className="pointer-events-none relative z-0 flex select-none justify-center lg:absolute lg:inset-x-0 lg:top-[11svh]">
-        <p className="hero-name font-black uppercase leading-[0.78] tracking-[-0.045em] text-[#e9edf2] text-[26.5vw] lg:text-[21vw] [perspective:800px]" aria-hidden>
+        <p className="hero-name hero-name-size will-change-transform font-black uppercase leading-[0.78] tracking-[-0.045em] text-[#e9edf2] [perspective:800px]" aria-hidden>
           Surya
         </p>
       </div>
@@ -83,7 +85,7 @@ export default function Hero() {
         }}
         onLoad={() => markDone('hero-photo')}
         onError={() => markDone('hero-photo')}
-        className="hero-person relative z-10 mx-auto -mt-[13vw] block h-[64svh] w-auto max-w-none origin-bottom lg:absolute lg:bottom-0 lg:left-[64%] lg:mt-0 lg:h-[86svh] lg:-translate-x-1/2"
+        className="hero-person will-change-transform relative z-10 mx-auto -mt-[13vw] block h-[64svh] w-auto max-w-none origin-bottom lg:absolute lg:bottom-0 lg:left-[64%] lg:mt-0 lg:h-[86svh] lg:-translate-x-1/2"
         style={{ maskImage: 'linear-gradient(to bottom, #000 72%, transparent 98%)', WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent 98%)' }}
       />
 
@@ -91,7 +93,7 @@ export default function Hero() {
       <div className="hero-copy page-x relative z-20 -mt-24 pb-14 text-center lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:pb-16 lg:text-left">
         <div className="lg:max-w-[34rem]">
           <motion.div {...rise(0.6, ready)}>
-            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00d4ff55] bg-black/80 px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#00d4ff] backdrop-blur sm:text-xs">
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00d4ff55] bg-black/85 px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#00d4ff] sm:text-xs">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d4ff] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d4ff]" />
@@ -127,7 +129,7 @@ export default function Hero() {
               href="https://drive.google.com/file/d/1im7brBirdHxuf1hUdZLaOUYjAk4Ou3UT/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg border border-[#00d4ff77] bg-black/70 px-7 py-3.5 text-sm font-semibold text-[#00d4ff] backdrop-blur transition-colors duration-200 hover:bg-[#00d4ff18]"
+              className="rounded-lg border border-[#00d4ff77] bg-black/80 px-7 py-3.5 text-sm font-semibold text-[#00d4ff] transition-colors duration-200 hover:bg-[#00d4ff18]"
             >
               Download Resume
             </a>
@@ -141,7 +143,7 @@ export default function Hero() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={s.label}
-                className="flex items-center gap-2 rounded-lg border border-[#ffffff20] bg-black/75 px-3.5 py-2 text-sm text-slate-400 backdrop-blur transition-colors duration-200 hover:border-[#00d4ff66] hover:text-[#00d4ff]"
+                className="flex items-center gap-2 rounded-lg border border-[#ffffff20] bg-black/80 px-3.5 py-2 text-sm text-slate-400 transition-colors duration-200 hover:border-[#00d4ff66] hover:text-[#00d4ff]"
               >
                 {s.icon}
                 <span className="hidden sm:inline">{s.label}</span>

@@ -144,7 +144,7 @@ export default function About() {
               learning, and competitive programming.
             </p>
 
-            <dl className="mb-8 divide-y divide-white/10 rounded-xl border border-white/10 bg-[#0b0b12]/70 backdrop-blur-sm">
+            <dl className="mb-8 divide-y divide-white/10 rounded-xl border border-white/10 bg-[#0b0b12]">
               {[
                 ['Institute', 'Indian Institute of Information Technology Jabalpur'],
                 ['Degree', 'B.Tech – CSE'],

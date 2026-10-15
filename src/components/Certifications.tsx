@@ -91,7 +91,6 @@ export default function Certifications() {
         const facing = Math.cos(((i * STEP + a.shown) * Math.PI) / 180);
         const el = cards[i] as HTMLElement;
         el.style.opacity = String(0.18 + Math.max(0, facing) * 0.82);
-        el.style.filter = facing > 0.92 ? 'none' : `blur(${(1 - Math.max(facing, 0)) * 2.5}px)`;
         el.style.pointerEvents = facing > 0.7 ? 'auto' : 'none';
         if (facing > bestFacing) {
           bestFacing = facing;
