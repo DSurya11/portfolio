@@ -5,6 +5,7 @@
 // the canvas can cover a whole section (the card never clips) without blocking what's under it.
 // Also: shaders are compiled with compileAsync before the first draw (and the canvas fades in),
 // so building the scene doesn't freeze the page while someone is scrolling.
+// Also: `nudge` (a push from outside, for the drag hint) and `onGrab` (reports the first grab).
 /* eslint-disable */
 
 import { useEffect, useRef } from 'react';
@@ -39,6 +40,10 @@ export interface LanyardProps {
   anchorDrop?: number;
   /** Local addition: called once the scene has compiled and is drawn. */
   onReady?: () => void;
+  /** Local addition: change this number to give the card a small push (a hint that it moves). */
+  nudge?: number;
+  /** Local addition: called when someone grabs the card. */
+  onGrab?: () => void;
   strapLength?: number;
   strapImage?: string;
   strapColor?: string;
@@ -66,6 +71,8 @@ interface Settings {
   anchor: Anchor;
   anchorDrop: number;
   onReady?: () => void;
+  nudge?: number;
+  onGrab?: () => void;
   strapLength: number;
   strapImage?: string;
   strapColor: string;
@@ -892,6 +899,8 @@ const Lanyard = ({
   anchor = 'center',
   anchorDrop = 0,
   onReady,
+  nudge = 0,
+  onGrab,
   strapLength = 0.5,
   strapImage,
   strapColor = '#111111',
@@ -922,6 +931,8 @@ const Lanyard = ({
     anchor,
     anchorDrop,
     onReady,
+    nudge,
+    onGrab,
     strapLength,
     strapImage,
     strapColor,
@@ -1066,6 +1077,7 @@ const Lanyard = ({
     let last = performance.now();
     let time = 0;
     let visible = true;
+    let appliedNudge = settingsRef.current!.nudge ?? 0;
     let alive = true;
     let placed = false;
     let hovering = false;
@@ -1135,6 +1147,7 @@ const Lanyard = ({
     };
 
     const apply = () => {
+      if ((settingsRef.current!.nudge ?? 0) !== appliedNudge) start();
       const s = settingsRef.current!;
       const layoutKey = `${s.orientation}|${s.cornerRadius}`;
       if (layoutKey !== applied.layoutKey) {
@@ -1335,6 +1348,15 @@ const Lanyard = ({
       last = now;
       time += dt;
       const current = physics();
+      const wanted = settingsRef.current!.nudge ?? 0;
+      if (wanted !== appliedNudge) {
+        // A push to the right with a little lift and twist, as if someone tugged the card.
+        appliedNudge = wanted;
+        sim.body.velocity.x += 2.6;
+        sim.body.velocity.y += 0.8;
+        sim.body.angular.z -= 2.2;
+        sim.calm = 0;
+      }
       stepSimulation(sim, dt, current, time);
       const body = sim.body;
       if (!Number.isFinite(body.position.x + body.position.y + body.position.z + body.quaternion.w)) {
@@ -1411,6 +1433,7 @@ const Lanyard = ({
         target: hit.point.clone()
       };
       press = { x: event.clientX, y: event.clientY, time: performance.now(), point: hit.point.clone() };
+      settingsRef.current!.onGrab?.();
       swallowClick = true;
       setCursor('grabbing');
       event.preventDefault();

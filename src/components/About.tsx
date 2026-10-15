@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { MapPin, Mail, Hand } from 'lucide-react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { MapPin, Mail, Hand, HandGrab } from 'lucide-react';
 import { SectionHeading } from './fx/SectionHeading';
 import { makeBadgeFaces, BADGE_COLOR } from './badge';
 import { Boundary } from './fx/Boundary';
@@ -23,11 +23,101 @@ function BadgeFailed() {
 }
 const OVER_TOP = 420;
 
+// Shows that the card can be dragged: when the card first comes into view, a hand presses on it
+// and drags, and the card is pushed at the same moment, so it looks pulled. It plays twice, and
+// never again on this browser once the card has been grabbed.
+const GRABBED_KEY = 'badge-grabbed';
+const readGrabbed = () => {
+  try {
+    return localStorage.getItem(GRABBED_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+function DragHint({ left, top, onPull, show }: { left: string; top: number; onPull: () => void; show: boolean }) {
+  const [phase, setPhase] = useState<'idle' | 'press' | 'drag' | 'release'>('idle');
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!show || reducedMotion()) return;
+    const timers: number[] = [];
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    // Two rounds, after the card has settled from its drop-in: appear, press, drag (and push
+    // the card), release.
+    [1800, 4400].forEach((t0) => {
+      at(t0 + 400, () => {
+        setVisible(true);
+        setPhase('idle');
+      });
+      at(t0 + 900, () => setPhase('press'));
+      at(t0 + 1150, () => {
+        setPhase('drag');
+        onPull();
+      });
+      at(t0 + 1750, () => setPhase('release'));
+    });
+    at(7000, () => setVisible(false));
+    return () => timers.forEach(clearTimeout);
+  }, [show, onPull]);
+
+  const moved = phase === 'drag' || phase === 'release';
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute z-30 transition-opacity duration-300"
+      style={{ left, top, opacity: visible && show ? 1 : 0 }}
+    >
+      <div
+        className="relative transition-transform ease-out"
+        style={{
+          transform: `translate(${moved ? 70 : 0}px, ${moved ? 26 : 0}px) scale(${phase === 'press' || phase === 'drag' ? 0.88 : 1})`,
+          transitionDuration: phase === 'drag' ? '600ms' : '200ms',
+        }}
+      >
+        <span
+          className="absolute -left-4 -top-4 h-8 w-8 rounded-full border-2 border-white/80 transition-all duration-300"
+          style={{ opacity: phase === 'press' || phase === 'drag' ? 1 : 0, transform: `scale(${phase === 'press' ? 1 : 1.6})` }}
+        />
+        {phase === 'press' || phase === 'drag' ? (
+          <HandGrab size={38} strokeWidth={1.75} className="-translate-x-1/3 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]" />
+        ) : (
+          <Hand size={38} strokeWidth={1.75} className="-translate-x-1/3 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]" />
+        )}
+        <span className="absolute left-9 top-1.5 whitespace-nowrap rounded-md border border-white/20 bg-black/85 px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-widest text-white">
+          Drag me
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
   const [faces, setFaces] = useState<{ front: string; back: string; strap: string } | null>(null);
   const [wide, setWide] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
   const box = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(900);
+  const [nudge, setNudge] = useState(0);
+  const [hint, setHint] = useState(false);
+  const [grabbed, setGrabbed] = useState(readGrabbed);
+  const pull = useCallback(() => setNudge((n) => n + 1), []);
+  const onGrab = useCallback(() => {
+    setGrabbed(true);
+    try {
+      localStorage.setItem(GRABBED_KEY, '1');
+    } catch {
+      /* private mode: the hint simply shows again next visit */
+    }
+  }, []);
+  // Start the hint once the card is well inside the screen.
+  useEffect(() => {
+    if (grabbed || !faces) return;
+    const el = wide ? section.current : box.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setHint(true), { threshold: wide ? 0.45 : 0.6 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [grabbed, faces, wide, section]);
   // Built straight away, behind the loading screen; the page is revealed once its scene is ready.
   useEffect(() => {
     let alive = true;
@@ -76,6 +166,8 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
             strapLength={strapLength}
             breeze={0.6}
             onReady={() => markDone('badge')}
+            nudge={nudge}
+            onGrab={onGrab}
           />
         </Suspense>
       </Boundary>
@@ -91,17 +183,24 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
     />
   );
 
+  // The hand starts on the card's middle, a little to the left of centre.
+  const hintEl = faces && !grabbed && (
+    <DragHint left={wide ? 'calc(73% - 10px)' : 'calc(50% - 10px)'} top={restTop + cardPx * 0.6} onPull={pull} show={hint} />
+  );
+
   if (wide)
     return (
       <>
         {card}
         {hook}
+        {hintEl}
       </>
     );
   return (
     <div ref={box} data-badge-box className="page-x relative mt-4 h-[520px] sm:h-[600px]">
       {card}
       {hook}
+      {hintEl}
       <p className="pointer-events-none absolute left-6 top-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-slate-500">
         <Hand size={14} /> Drag the card
       </p>
