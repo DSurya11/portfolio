@@ -58,7 +58,7 @@ export default function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-          scrolled ? 'bg-black/90 border-b border-white/10' : 'bg-transparent'
+          scrolled ? 'bg-black' : 'bg-transparent'
         }`}
       >
         <div className="page-x">
@@ -92,6 +92,13 @@ export default function Navbar() {
             </button>
           </div>
         </div>
+        {/* A soft fade below the bar, so the page slides under it with no hard edge. */}
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute left-0 right-0 top-full h-10 bg-gradient-to-b from-black to-transparent transition-opacity duration-300 ${
+            scrolled ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
         <motion.div style={{ scaleX: progress }} className="absolute bottom-0 left-0 right-0 h-px origin-left bg-slate-300/50" />
       </motion.nav>
 
