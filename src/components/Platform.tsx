@@ -104,9 +104,9 @@ export default function Platform() {
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#00d4ff]">Delivery</p>
             <h3 className="mt-3 text-3xl font-bold leading-tight text-white">No pipeline holds a deploy credential</h3>
             <p className="mt-4 leading-relaxed text-slate-300">
-              CI only builds, scans and pushes an image, signed with build provenance and an SBOM through Sigstore, keyless. The
-              cluster pulls: Argo CD Image Updater commits the new tag to the GitOps repo and Argo CD rolls it out. An image is pushed
-              only for the newest commit of main, so the older of two quick merges can never end up deployed.
+              CI only builds, scans and pushes an image; the shared workflow also signs it with build provenance and an SBOM through
+              Sigstore, keyless. The cluster pulls: Argo CD Image Updater commits the new tag to the GitOps repo and Argo CD rolls it
+              out. An image is pushed only for the newest commit of main, so the older of two quick merges can never end up deployed.
             </p>
           </div>
           <div ref={flow} className="min-w-0 rounded-2xl border border-white/10 bg-[#07070b] p-4 sm:p-6">

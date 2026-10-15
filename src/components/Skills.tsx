@@ -8,7 +8,7 @@ import {
 import { IconCloud, type CloudItem } from './IconCloud';
 import { SectionHeading } from './fx/SectionHeading';
 
-// Every entry is used in a project or the internship shown on this page.
+// The skills listed on the original site, plus the tools used in the projects and internship shown on this page.
 const skillGroups = [
   {
     category: 'Cloud & DevOps',
