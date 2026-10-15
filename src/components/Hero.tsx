@@ -8,9 +8,9 @@ import { scrollToId } from '../lib/scroll';
 import { onReady, useAppReady, markDone } from '../lib/ready';
 
 const typingPhrases = [
-  'I build AI-powered systems',
-  'I build real-time ML pipelines',
-  'I build full-stack applications',
+  'I build platforms on Kubernetes and AWS',
+  'I automate delivery: CI, GitOps, Terraform',
+  'I build full-stack and ML systems',
   'LeetCode Knight | Top 3.5% globally',
 ];
 
@@ -98,7 +98,7 @@ export default function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d4ff] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d4ff]" />
               </span>
-              Open to Internships &amp; Full-Time Roles
+              Open to full-time roles from 2027
             </span>
           </motion.div>
 
@@ -113,7 +113,7 @@ export default function Hero() {
             </span>
           </motion.p>
           <p className="mb-8 mt-1 text-slate-400 sm:text-lg">
-            Final year CSE @ <span className="font-medium text-slate-200">IIIT Jabalpur</span> &nbsp;|&nbsp; CPI{' '}
+            Final year CSE @ <span className="font-medium text-slate-200">IIITDM Jabalpur</span> &nbsp;|&nbsp; CPI{' '}
             <span className="font-semibold text-[#00d4ff]">8.1</span>
           </p>
 

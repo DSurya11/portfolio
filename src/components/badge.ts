@@ -67,7 +67,7 @@ function masthead(ctx: Ctx, onPhoto: boolean) {
   ctx.font = `700 28px ${MONO}`;
   ctx.fillStyle = onPhoto ? 'rgba(255,255,255,0.92)' : MUTED;
   ctx.textAlign = 'right';
-  ctx.fillText('IIIT JBP', W - PAD, 104);
+  ctx.fillText('IIITDM JBP', W - PAD, 104);
   ctx.textAlign = 'left';
 }
 
@@ -102,7 +102,7 @@ export async function makeBadgeFaces() {
   f.fillStyle = TEXT;
   fitText(f, 'Surya Dantuluri', PAD - 2, 752, inner, 82, 800);
   f.fillStyle = MUTED;
-  fitText(f, 'B.Tech CSE · IIIT Jabalpur', PAD, 812, inner, 40, 500);
+  fitText(f, 'B.Tech CSE · IIITDM Jabalpur', PAD, 812, inner, 40, 500);
   f.fillStyle = FAINT;
   f.fillRect(PAD, 860, inner, 3);
   f.font = `700 30px ${MONO}`;

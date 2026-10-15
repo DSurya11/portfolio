@@ -25,7 +25,7 @@ export function FillHeading({ lead, accent }: { lead: string; accent: string }) 
       <span className={outline ? '' : 'text-[#00d4ff]'}>{accent}</span>
     </>
   );
-  const type = 'whitespace-nowrap font-black uppercase leading-[0.9] tracking-[-0.03em] text-[10.6vw] lg:text-[8.8rem]';
+  const type = 'whitespace-nowrap font-black uppercase leading-[0.9] tracking-[-0.03em] text-[10.6vw] xl:text-[8.8rem]';
 
   return (
     <div ref={ref} className="text-center">

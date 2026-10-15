@@ -53,13 +53,13 @@ export default function Achievements() {
       gsap.set('.score-col', { z: -160, opacity: 0, transformPerspective: 1400 });
       ScrollTrigger.create({
         trigger: board.current,
-        start: 'top 92%',
+        start: 'top bottom',
         once: true,
         onEnter: () => {
           gsap
             .timeline({ onComplete: playAll })
-            .to(board.current, { rotateX: 0, y: 0, opacity: 1, duration: 1.1, ease: 'power3.out' })
-            .to('.score-col', { z: 0, opacity: 1, stagger: 0.12, duration: 0.8, ease: 'power3.out' }, 0.25);
+            .to(board.current, { rotateX: 0, y: 0, opacity: 1, duration: 0.9, ease: 'power3.out' })
+            .to('.score-col', { z: 0, opacity: 1, stagger: 0.1, duration: 0.7, ease: 'power3.out' }, 0.2);
         },
       });
     },

@@ -24,7 +24,7 @@ export default function Contact() {
           transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto mb-14 max-w-xl text-center text-lg leading-relaxed text-slate-300"
         >
-          Currently targeting <span className="font-medium text-white">Summer 2026 SDE internships, full-time roles</span>. Let's talk.
+          Open to <span className="font-medium text-white">full-time roles from 2027</span>. Let's talk.
         </motion.p>
 
         <Keyboard />

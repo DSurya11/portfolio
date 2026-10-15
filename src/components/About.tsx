@@ -138,15 +138,15 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <div>
             <p ref={bio} className="text-slate-200 text-xl md:text-2xl leading-relaxed mb-8">
-              I'm a final year Computer Science student at <span className="text-[#00d4ff] font-medium">IIIT Jabalpur</span> with
-              a CPI of <span className="text-[#00d4ff] font-semibold">8.1</span>. I specialize in building production-grade AI
-              systems, real-time ML pipelines, and full-stack applications. Passionate about backend engineering, machine
-              learning, and competitive programming.
+              I'm a final year Computer Science student at <span className="text-[#00d4ff] font-medium">IIITDM Jabalpur</span>.
+              I'm an R&amp;D intern at Airspan Networks, where I deploy a telecom network-management product with Helm on
+              Kubernetes and automate its regression testing. In my own time I built an internal developer platform on AWS:
+              Terraform, EKS, Argo CD, Backstage and a shared CI that signs what it builds.
             </p>
 
             <dl className="mb-8 divide-y divide-white/10 rounded-xl border border-white/10 bg-[#0b0b12]">
               {[
-                ['Institute', 'Indian Institute of Information Technology Jabalpur'],
+                ['Institute', 'PDPM IIITDM Jabalpur'],
                 ['Degree', 'B.Tech – CSE'],
                 ['CPI', '8.1 / 10'],
                 ['Duration', 'Aug 2023 – May 2027'],

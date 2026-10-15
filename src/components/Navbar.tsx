@@ -4,8 +4,10 @@ import { scrollToId, lockScroll } from '../lib/scroll';
 
 const navLinks = [
   { label: 'About', href: '#about' },
-  { label: 'Skills', href: '#skills' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Platform', href: '#platform' },
   { label: 'Projects', href: '#projects' },
+  { label: 'Skills', href: '#skills' },
   { label: 'Achievements', href: '#achievements' },
   { label: 'Certifications', href: '#certifications' },
   { label: 'Contact', href: '#contact' },
@@ -66,7 +68,7 @@ export default function Navbar() {
               <span className="text-white">S</span>
             </a>
 
-            <ul className="hidden md:flex items-center gap-8">
+            <ul className="hidden lg:flex items-center gap-6 xl:gap-8">
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <a
@@ -83,7 +85,7 @@ export default function Navbar() {
               ))}
             </ul>
 
-            <button className="md:hidden relative z-[60] flex flex-col gap-1.5 p-2" onClick={() => setMenuOpen((v) => !v)} aria-label="Toggle menu" aria-expanded={menuOpen}>
+            <button className="lg:hidden relative z-[60] flex flex-col gap-1.5 p-2" onClick={() => setMenuOpen((v) => !v)} aria-label="Toggle menu" aria-expanded={menuOpen}>
               <span className={`block w-6 h-0.5 bg-slate-200 transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
               <span className={`block w-6 h-0.5 bg-slate-200 transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
               <span className={`block w-6 h-0.5 bg-slate-200 transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
@@ -97,7 +99,7 @@ export default function Navbar() {
         {menuOpen && (
           <motion.div
             key="menu"
-            className="fixed inset-0 z-40 flex flex-col justify-center bg-[#07070c]/95 px-8 backdrop-blur-xl md:hidden"
+            className="fixed inset-0 z-40 flex flex-col justify-center bg-[#07070c]/95 px-8 backdrop-blur-xl lg:hidden"
             initial={{ clipPath: 'circle(0% at 92% 4%)' }}
             animate={{ clipPath: 'circle(150% at 92% 4%)' }}
             exit={{ clipPath: 'circle(0% at 92% 4%)' }}

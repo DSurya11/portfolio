@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import About from './components/About';
 import Skills from './components/Skills';
+import Experience from './components/Experience';
+import Platform from './components/Platform';
 import Projects from './components/Projects';
 import Achievements from './components/Achievements';
 import Certifications from './components/Certifications';
@@ -23,8 +25,10 @@ export default function BelowFold() {
     <>
       <main className="relative z-10">
         <About />
-        <Skills />
+        <Experience />
+        <Platform />
         <Projects />
+        <Skills />
         <Achievements />
         <Certifications />
         <Contact />

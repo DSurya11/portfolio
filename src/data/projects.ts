@@ -9,21 +9,89 @@ export type Project = {
   github: string;
   live: string | null;
   accent: string;
-  // How the system fits together, drawn from the description above (viewBox 640 × 250).
+  // How the system fits together, checked against the repository (viewBox 640 × 250).
   diagram: Diagram;
 };
 
+// Every claim below was checked against the project's repository (README, code, CI files).
 export const projects: Project[] = [
+  {
+    title: 'Tachyon News — Verified Market News Pipeline',
+    description:
+      'An hourly pipeline that scrapes US and Indian market news, extracts tickers, sentiment and facts with an LLM, checks every quoted sentence and number against the article, and writes a cited daily brief. It runs on a laptop as systemd timers and services, and a Vercel dashboard reaches its API through Tailscale Funnel.',
+    tech: ['Python', 'Playwright', 'FastAPI', 'PostgreSQL', 'systemd', 'React', 'Tailscale', 'GitHub Actions'],
+    highlights: [
+      'Six stages every hour: scrape, fetch, LLM extraction, cited brief, prices, Neon sync',
+      'Grounding check: every evidence quote and number is verified against the article body',
+      'systemd timers and services, daily pg_dump backups, failure alerts and a doctor command',
+      'CI runs lint and 150+ tests, including a real-browser test of the dashboard',
+    ],
+    github: 'https://github.com/DSurya11/tachyon-news',
+    live: 'https://tachyon-news.vercel.app/?demo=1',
+    accent: '#10b981',
+    diagram: {
+      nodes: [
+        { id: 'src', label: 'Finviz + RSS', sub: 'US and India', x: 70, y: 60 },
+        { id: 'scrape', label: 'Scrape + fetch', sub: 'hourly systemd timer', x: 240, y: 60 },
+        { id: 'extract', label: 'LLM extraction', sub: 'quote + number check', x: 410, y: 60 },
+        { id: 'brief', label: 'Daily brief', sub: 'cited', x: 570, y: 60 },
+        { id: 'db', label: 'PostgreSQL', sub: 'daily backups', x: 410, y: 190 },
+        { id: 'api', label: 'FastAPI', sub: 'Tailscale Funnel', x: 240, y: 190 },
+        { id: 'ui', label: 'Dashboard', sub: 'Vercel', x: 70, y: 190 },
+      ],
+      edges: [
+        ['src', 'scrape'],
+        ['scrape', 'extract'],
+        ['extract', 'brief'],
+        ['extract', 'db'],
+        ['db', 'api'],
+        ['api', 'ui'],
+      ],
+    },
+  },
+  {
+    title: 'Job Finder — India Job Aggregator',
+    description:
+      'Pulls open roles from 260+ company job boards (Workday, Greenhouse, SmartRecruiters, Ashby, Lever), big-company career sites, LinkedIn and Internshala. It parses role, level, pay and city, scores each job against a profile, gives every posting a pay verdict, and serves a React app to filter, shortlist and track applications.',
+    tech: ['Python', 'Playwright', 'SQLite', 'React', 'Vite', 'Tailwind', 'Claude API'],
+    highlights: [
+      '264 companies across Workday, Greenhouse, SmartRecruiters, Ashby and Lever',
+      'Pay verdict per job from stated pay, AmbitionBox data or a labelled estimate',
+      'Coverage view flags companies whose fetch failed, came back empty or dropped sharply',
+      'make up / make down: one command to set up, build and serve',
+    ],
+    github: 'https://github.com/DSurya11/job-finder',
+    live: null,
+    accent: '#e11d48',
+    diagram: {
+      nodes: [
+        { id: 'boards', label: 'Job boards', sub: '260+ companies', x: 70, y: 60 },
+        { id: 'sites', label: 'Career sites', sub: 'Playwright', x: 70, y: 190 },
+        { id: 'enrich', label: 'Parse + enrich', sub: 'role · level · pay', x: 240, y: 125 },
+        { id: 'score', label: 'Fit + pay verdict', x: 410, y: 60 },
+        { id: 'db', label: 'SQLite', x: 410, y: 190 },
+        { id: 'ui', label: 'React app', sub: 'shortlist · track', x: 570, y: 125 },
+      ],
+      edges: [
+        ['boards', 'enrich'],
+        ['sites', 'enrich'],
+        ['enrich', 'score'],
+        ['enrich', 'db'],
+        ['score', 'ui'],
+        ['db', 'ui'],
+      ],
+    },
+  },
   {
     title: 'MockMate — AI-Powered Mock Interview Platform',
     description:
-      'Full-stack AI interview platform with 8-service Docker Compose architecture, real-time voice pipeline using Faster-Whisper + Groq LLM achieving <2s latency, async resume analysis via BullMQ workers, and JWT + RBAC authentication across 15+ REST endpoints.',
-    tech: ['React', 'FastAPI', 'Node.js', 'PostgreSQL', 'Redis', 'BullMQ', 'Docker', 'Prometheus'],
+      'A full-stack interview platform: voice interviews with LLM interviewers, transcription with the Groq Whisper API, resume analysis on a BullMQ worker, and JWT + RBAC authentication. Eight services run under Docker Compose with Prometheus and Grafana, and GitHub Actions type-checks, tests and deploys to Render.',
+    tech: ['React', 'Node.js', 'FastAPI', 'PostgreSQL', 'Redis', 'BullMQ', 'Docker', 'Prometheus', 'Grafana'],
     highlights: [
-      '8-service Docker Compose with health monitoring',
-      'Real-time voice pipeline — under 2s response latency',
-      'ATS scoring + skill extraction via BullMQ + Redis',
-      'JWT + RBAC + HTTP-only cookies security',
+      '8 services in Docker Compose, including Prometheus and Grafana',
+      'Groq Whisper transcription in about 600 ms after an answer',
+      'Resume ATS scoring and skill extraction on a BullMQ worker',
+      'GitHub Actions: type check, tests and build, then deploy to Render',
     ],
     github: 'https://github.com/DSurya11/mockmate',
     live: 'https://mockmate-frontend-b8z6.onrender.com',
@@ -31,52 +99,50 @@ export const projects: Project[] = [
     diagram: {
       nodes: [
         { id: 'ui', label: 'React app', x: 70, y: 125 },
-        { id: 'api', label: 'Node API', sub: 'JWT + RBAC', x: 230, y: 60 },
-        { id: 'voice', label: 'Voice pipeline', sub: '< 2s', x: 230, y: 190 },
-        { id: 'db', label: 'PostgreSQL', x: 400, y: 30 },
-        { id: 'q', label: 'Redis + BullMQ', x: 400, y: 100 },
-        { id: 'stt', label: 'Faster-Whisper', x: 400, y: 190 },
-        { id: 'work', label: 'Resume workers', sub: 'ATS scoring', x: 570, y: 100 },
-        { id: 'llm', label: 'Groq LLM', x: 570, y: 190 },
+        { id: 'api', label: 'Express API', sub: 'JWT + RBAC', x: 240, y: 60 },
+        { id: 'db', label: 'PostgreSQL', sub: 'Prisma', x: 410, y: 30 },
+        { id: 'q', label: 'Redis + BullMQ', x: 410, y: 110 },
+        { id: 'worker', label: 'Worker', sub: 'resume analysis', x: 570, y: 110 },
+        { id: 'ai', label: 'AI service', sub: 'FastAPI', x: 240, y: 200 },
+        { id: 'groq', label: 'Groq', sub: 'LLM + Whisper', x: 410, y: 200 },
       ],
       edges: [
         ['ui', 'api'],
-        ['ui', 'voice'],
         ['api', 'db'],
         ['api', 'q'],
-        ['q', 'work'],
-        ['voice', 'stt'],
-        ['stt', 'llm'],
+        ['q', 'worker'],
+        ['ui', 'ai'],
+        ['ai', 'groq'],
       ],
     },
   },
   {
     title: 'Crypto Momentum Intelligence System',
     description:
-      'Real-time ETL pipeline ingesting 1,000+ swap events/hour from GeckoTerminal, training per-chain stacking ensemble models (XGBoost + Random Forest + Extra Trees) on 12K–30K samples with 20+ technical indicators and 500K+ time-series records in PostgreSQL.',
-    tech: ['Python', 'FastAPI', 'PostgreSQL', 'XGBoost', 'React', 'Docker'],
+      'A live pipeline that ingests GeckoTerminal swap data across Base, BSC, Solana and Ethereum every 5 minutes, builds 30+ engineered features, and retrains a per-chain stacking ensemble (XGBoost, Random Forest and Extra Trees with a logistic-regression meta-learner) on every tick. Buy and sell thresholds recalibrate from the last 14 days of verified picks.',
+    tech: ['Python', 'PostgreSQL', 'XGBoost', 'scikit-learn', 'FastAPI', 'React'],
     highlights: [
-      '1,000+ swap events/hour ETL pipeline',
-      'Stacking ensemble: XGBoost + RF + Extra Trees',
-      '20+ technical indicators with adaptive calibration',
-      '500K+ time-series records in PostgreSQL',
+      '5-minute ingestion across four chains from GeckoTerminal',
+      'Per-chain stacking ensemble retrained every tick on 12K–30K rows',
+      'Thresholds self-calibrate from 14 days of verified predictions',
+      'Every pick is checked after two hours and its outcome recorded',
     ],
     github: 'https://github.com/DSurya11/crypto-momentum-intelligence',
     live: null,
     accent: '#7c3aed',
     diagram: {
       nodes: [
-        { id: 'src', label: 'GeckoTerminal', sub: 'swap events', x: 70, y: 60 },
-        { id: 'etl', label: 'ETL', sub: '1,000+ / hour', x: 230, y: 60 },
-        { id: 'db', label: 'PostgreSQL', sub: '500K+ rows', x: 400, y: 60 },
-        { id: 'feat', label: 'Indicators', sub: '20+ features', x: 570, y: 60 },
-        { id: 'model', label: 'Stacking ensemble', sub: 'XGB + RF + ET', x: 570, y: 190 },
-        { id: 'api', label: 'FastAPI', x: 400, y: 190 },
-        { id: 'ui', label: 'React dashboard', x: 230, y: 190 },
+        { id: 'src', label: 'GeckoTerminal', sub: '4 chains', x: 70, y: 60 },
+        { id: 'ingest', label: 'Ingest', sub: 'every 5 min', x: 240, y: 60 },
+        { id: 'db', label: 'PostgreSQL', sub: 'swaps · candles', x: 410, y: 60 },
+        { id: 'feat', label: 'Features', sub: '30+ engineered', x: 570, y: 60 },
+        { id: 'model', label: 'Stacking ensemble', sub: 'one per chain', x: 570, y: 190 },
+        { id: 'api', label: 'FastAPI', sub: 'picks verified 2h', x: 410, y: 190 },
+        { id: 'ui', label: 'React dashboard', x: 240, y: 190 },
       ],
       edges: [
-        ['src', 'etl'],
-        ['etl', 'db'],
+        ['src', 'ingest'],
+        ['ingest', 'db'],
         ['db', 'feat'],
         ['feat', 'model'],
         ['model', 'api'],
@@ -85,36 +151,9 @@ export const projects: Project[] = [
     },
   },
   {
-    title: 'Credit Risk Prediction API',
-    description:
-      'ML-powered loan approval API with Random Forest classifier achieving 98.1% accuracy and 98% F1-score, full prediction auditability via SQLAlchemy ORM, deployed to Render with live Swagger/OpenAPI docs.',
-    tech: ['FastAPI', 'PostgreSQL', 'Scikit-learn', 'SQLAlchemy', 'Docker'],
-    highlights: ['98.1% accuracy | 98% F1-score Random Forest', '100% prediction auditability', 'Live Swagger/OpenAPI documentation'],
-    github: 'https://github.com/DSurya11/credit-risk-api',
-    live: 'https://credit-risk-api-wpam.onrender.com/docs',
-    accent: '#059669',
-    diagram: {
-      nodes: [
-        { id: 'client', label: 'Loan request', x: 70, y: 125 },
-        { id: 'api', label: 'FastAPI', sub: 'Swagger docs', x: 230, y: 125 },
-        { id: 'model', label: 'Random Forest', sub: '98.1% accuracy', x: 400, y: 60 },
-        { id: 'orm', label: 'SQLAlchemy', sub: 'audit trail', x: 400, y: 190 },
-        { id: 'db', label: 'PostgreSQL', x: 570, y: 190 },
-        { id: 'out', label: 'Decision', x: 570, y: 60 },
-      ],
-      edges: [
-        ['client', 'api'],
-        ['api', 'model'],
-        ['model', 'out'],
-        ['api', 'orm'],
-        ['orm', 'db'],
-      ],
-    },
-  },
-  {
     title: 'CineBook — Movie Reservation System',
     description:
-      'Full-stack cinema booking platform with transaction-safe seat locking using MySQL transactions and 5-minute pending reservation guards to prevent double-booking race conditions.',
+      'A full-stack cinema booking platform with transaction-safe seat locking: MySQL transactions and a 5-minute hold on pending reservations stop two people from booking the same seat.',
     tech: ['React', 'Node.js', 'Express', 'MySQL', 'TailwindCSS', 'React Query'],
     highlights: [
       'MySQL transactions eliminate double-booking races',
@@ -128,9 +167,9 @@ export const projects: Project[] = [
     diagram: {
       nodes: [
         { id: 'ui', label: 'React', sub: 'React Query cache', x: 70, y: 125 },
-        { id: 'api', label: 'Express API', sub: 'bcrypt auth', x: 230, y: 125 },
-        { id: 'lock', label: 'Seat lock', sub: '5-min hold', x: 400, y: 60 },
-        { id: 'map', label: 'Seat map', sub: 'from schema', x: 400, y: 190 },
+        { id: 'api', label: 'Express API', sub: 'bcrypt auth', x: 240, y: 125 },
+        { id: 'lock', label: 'Seat lock', sub: '5-min hold', x: 410, y: 60 },
+        { id: 'map', label: 'Seat map', sub: 'from schema', x: 410, y: 190 },
         { id: 'db', label: 'MySQL', sub: 'transactions', x: 570, y: 125 },
       ],
       edges: [
@@ -139,99 +178,6 @@ export const projects: Project[] = [
         ['api', 'map'],
         ['lock', 'db'],
         ['map', 'db'],
-      ],
-    },
-  },
-  {
-    title: 'AI Job Search Assistant',
-    description:
-      'Intelligent job scraper using Playwright to crawl multiple job boards, scores postings against a PDF resume with sentence-transformer embeddings (all-MiniLM-L6-v2), and exports ranked matches to CSV.',
-    tech: ['Python', 'Playwright', 'Sentence-Transformers', 'NLP', 'PyMuPDF'],
-    highlights: [
-      'Multi-board scraping with Playwright automation',
-      'Resume–JD cosine similarity via sentence embeddings',
-      'Fully configurable via environment variables',
-      'Ranked job matches exported to CSV',
-    ],
-    github: 'https://github.com/DSurya11/job-finder',
-    live: null,
-    accent: '#e11d48',
-    diagram: {
-      nodes: [
-        { id: 'boards', label: 'Job boards', x: 70, y: 60 },
-        { id: 'pw', label: 'Playwright', sub: 'scraper', x: 230, y: 60 },
-        { id: 'pdf', label: 'Resume PDF', x: 70, y: 190 },
-        { id: 'mu', label: 'PyMuPDF', x: 230, y: 190 },
-        { id: 'emb', label: 'MiniLM-L6-v2', sub: 'embeddings', x: 400, y: 125 },
-        { id: 'csv', label: 'Ranked CSV', sub: 'cosine score', x: 570, y: 125 },
-      ],
-      edges: [
-        ['boards', 'pw'],
-        ['pw', 'emb'],
-        ['pdf', 'mu'],
-        ['mu', 'emb'],
-        ['emb', 'csv'],
-      ],
-    },
-  },
-  {
-    title: 'Event Management System',
-    description:
-      'Multi-role event platform for college/org events with role-based access control, full event CRUD, registration workflows, and participant management. Team collaboration with 4 contributors.',
-    tech: ['React', 'Node.js', 'Express', 'MySQL', 'REST API'],
-    highlights: [
-      'RBAC: User, Organizer, and Admin roles',
-      'Full event lifecycle — create, edit, manage registrations',
-      'Participant list management for organizers',
-      'Team project — 4 contributors',
-    ],
-    github: 'https://github.com/DSurya11/Event-Management-System',
-    live: null,
-    accent: '#f97316',
-    diagram: {
-      nodes: [
-        { id: 'ui', label: 'React', x: 70, y: 125 },
-        { id: 'api', label: 'Express REST', sub: 'RBAC', x: 230, y: 125 },
-        { id: 'ev', label: 'Events', sub: 'CRUD', x: 400, y: 60 },
-        { id: 'reg', label: 'Registrations', sub: 'participants', x: 400, y: 190 },
-        { id: 'db', label: 'MySQL', x: 570, y: 125 },
-      ],
-      edges: [
-        ['ui', 'api'],
-        ['api', 'ev'],
-        ['api', 'reg'],
-        ['ev', 'db'],
-        ['reg', 'db'],
-      ],
-    },
-  },
-  {
-    title: 'VibeNest — Music Streaming Platform',
-    description:
-      'Music streaming web app with in-browser song playback, playlist management, user authentication, and an admin panel for catalog management built on React, Node.js, and MySQL.',
-    tech: ['React', 'Node.js', 'Express', 'MySQL', 'Vite'],
-    highlights: [
-      'In-browser music player with playback controls',
-      'User playlists and song library management',
-      'Admin panel for catalog and user management',
-      'bcrypt-secured authentication',
-    ],
-    github: 'https://github.com/DSurya11/music-Streaming-platform',
-    live: null,
-    accent: '#a855f7',
-    diagram: {
-      nodes: [
-        { id: 'player', label: 'Player', sub: 'React + Vite', x: 70, y: 60 },
-        { id: 'admin', label: 'Admin panel', x: 70, y: 190 },
-        { id: 'api', label: 'Express API', sub: 'bcrypt auth', x: 300, y: 125 },
-        { id: 'lib', label: 'Playlists', sub: 'library', x: 520, y: 60 },
-        { id: 'db', label: 'MySQL', sub: 'catalog', x: 520, y: 190 },
-      ],
-      edges: [
-        ['player', 'api'],
-        ['admin', 'api'],
-        ['api', 'lib'],
-        ['api', 'db'],
       ],
     },
   },

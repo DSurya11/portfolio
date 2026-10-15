@@ -189,7 +189,8 @@ export function IconCloud({
         const d = dim.get(p)! + (want - dim.get(p)!) * 0.12;
         dim.set(p, d);
         const depth = (q.z + 1) / 2;
-        const s = (0.55 + depth * 0.6) * (hl && p.item.group === hl ? 1.18 : 1);
+        // Labels shrink with the sphere on small screens, so 50 of them still fit.
+        const s = (0.55 + depth * 0.6) * (hl && p.item.group === hl ? 1.18 : 1) * Math.min(1, size / 560);
         ctx.globalAlpha = (0.25 + depth * 0.75) * d;
         const w = p.w * s;
         const h = p.h * s;
@@ -210,7 +211,7 @@ export function IconCloud({
       for (const p of placed) {
         const q = project(p);
         if (q.z < 0) continue;
-        const s = 0.55 + ((q.z + 1) / 2) * 0.6;
+        const s = (0.55 + ((q.z + 1) / 2) * 0.6) * Math.min(1, size / 560);
         if (Math.abs(x - (size / 2 + q.x * R)) < (p.w * s) / 2 && Math.abs(y - (size / 2 - q.y * R)) < (p.h * s) / 2 && q.z > bestZ) {
           best = p;
           bestZ = q.z;

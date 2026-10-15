@@ -2,18 +2,26 @@ import { useState } from 'react';
 import {
   siCplusplus, siPython, siJavascript, siTypescript, siMysql, siReact, siHtml5, siSocketdotio, siNodedotjs,
   siExpress, siFastapi, siPostgresql, siMongodb, siRedis, siPrisma, siSqlalchemy, siNumpy, siPandas,
-  siScikitlearn, siTensorflow, siKeras, siDocker, siGit, siPostman,
+  siScikitlearn, siTensorflow, siKeras, siDocker, siGit, siPostman, siTerraform, siKubernetes, siHelm, siArgo,
+  siGithubactions, siJenkins, siPrometheus, siGrafana, siTrivy, siBackstage, siLinux, siRobotframework, siPytest,
 } from 'simple-icons';
 import { IconCloud, type CloudItem } from './IconCloud';
 import { SectionHeading } from './fx/SectionHeading';
 
+// Every entry is used in a project or the internship shown on this page.
 const skillGroups = [
-  { category: 'Languages', color: '#00d4ff', skills: ['C++', 'Python', 'JavaScript', 'TypeScript', 'SQL'] },
+  {
+    category: 'Cloud & DevOps',
+    color: '#00d4ff',
+    skills: ['AWS', 'Terraform', 'Kubernetes', 'Helm', 'Argo CD', 'Docker', 'GitHub Actions', 'Jenkins', 'Kyverno', 'Prometheus', 'Grafana', 'Loki', 'Trivy', 'Backstage', 'Linux', 'systemd'],
+  },
+  { category: 'Languages', color: '#38bdf8', skills: ['C++', 'Python', 'JavaScript', 'TypeScript', 'SQL'] },
   { category: 'Frontend', color: '#a78bfa', skills: ['React.js', 'HTML/CSS', 'Socket.IO'] },
   { category: 'Backend', color: '#10b981', skills: ['Node.js', 'Express.js', 'FastAPI', 'REST APIs', 'WebSockets', 'BullMQ', 'Microservices'] },
   { category: 'Databases & Cache', color: '#f59e0b', skills: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Prisma ORM', 'SQLAlchemy'] },
   { category: 'ML / AI', color: '#ec4899', skills: ['NumPy', 'Pandas', 'Scikit-learn', 'XGBoost', 'TensorFlow', 'Keras', 'Sentence Transformers', 'LLM APIs'] },
-  { category: 'DevOps & Tools', color: '#f97316', skills: ['Docker', 'Docker Compose', 'Git', 'Postman'] },
+  { category: 'Testing', color: '#84cc16', skills: ['Robot Framework', 'Playwright', 'pytest'] },
+  { category: 'Tools', color: '#f97316', skills: ['Docker Compose', 'Git', 'Postman'] },
 ];
 
 // Logos from Simple Icons (CC0). Skills without their own logo appear in the cloud as text tags.
@@ -23,7 +31,9 @@ const logos: Record<string, { path: string; hex: string }> = {
   'Express.js': siExpress, FastAPI: siFastapi, PostgreSQL: siPostgresql, MySQL: siMysql, MongoDB: siMongodb,
   Redis: siRedis, 'Prisma ORM': siPrisma, SQLAlchemy: siSqlalchemy, NumPy: siNumpy, Pandas: siPandas,
   'Scikit-learn': siScikitlearn, TensorFlow: siTensorflow, Keras: siKeras,
-  Docker: siDocker, Git: siGit, Postman: siPostman,
+  Docker: siDocker, Git: siGit, Postman: siPostman, Terraform: siTerraform, Kubernetes: siKubernetes, Helm: siHelm,
+  'Argo CD': siArgo, 'GitHub Actions': siGithubactions, Jenkins: siJenkins, Prometheus: siPrometheus, Grafana: siGrafana,
+  Trivy: siTrivy, Backstage: siBackstage, Linux: siLinux, 'Robot Framework': siRobotframework, pytest: siPytest,
 };
 
 const groupColors = Object.fromEntries(skillGroups.map((g) => [g.category, g.color]));
