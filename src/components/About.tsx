@@ -23,18 +23,9 @@ function BadgeFailed() {
 }
 const OVER_TOP = 420;
 
-// Shows that the card can be dragged: when the card first comes into view, a hand presses on it
-// and drags, and the card is pushed at the same moment, so it looks pulled. It plays twice, and
-// never again on this browser once the card has been grabbed.
-const GRABBED_KEY = 'badge-grabbed';
-const readGrabbed = () => {
-  try {
-    return localStorage.getItem(GRABBED_KEY) === '1';
-  } catch {
-    return false;
-  }
-};
-
+// Shows that the card can be dragged: as soon as the card comes into view, a hand presses on it
+// and drags, and the card is pushed at the same moment, so it looks pulled. One short round per
+// page load; it disappears the moment the visitor touches the card.
 function DragHint({ left, top, onPull, show }: { left: string; top: number; onPull: () => void; show: boolean }) {
   const [phase, setPhase] = useState<'idle' | 'press' | 'drag' | 'release'>('idle');
   const [visible, setVisible] = useState(false);
@@ -43,21 +34,15 @@ function DragHint({ left, top, onPull, show }: { left: string; top: number; onPu
     if (!show || reducedMotion()) return;
     const timers: number[] = [];
     const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
-    // Two rounds, after the card has settled from its drop-in: appear, press, drag (and push
-    // the card), release.
-    [1800, 4400].forEach((t0) => {
-      at(t0 + 400, () => {
-        setVisible(true);
-        setPhase('idle');
-      });
-      at(t0 + 900, () => setPhase('press'));
-      at(t0 + 1150, () => {
-        setPhase('drag');
-        onPull();
-      });
-      at(t0 + 1750, () => setPhase('release'));
+    // One round: appear, press, drag (and push the card), release, fade.
+    at(150, () => setVisible(true));
+    at(550, () => setPhase('press'));
+    at(800, () => {
+      setPhase('drag');
+      onPull();
     });
-    at(7000, () => setVisible(false));
+    at(1400, () => setPhase('release'));
+    at(2100, () => setVisible(false));
     return () => timers.forEach(clearTimeout);
   }, [show, onPull]);
 
@@ -99,22 +84,15 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
   const [height, setHeight] = useState(900);
   const [nudge, setNudge] = useState(0);
   const [hint, setHint] = useState(false);
-  const [grabbed, setGrabbed] = useState(readGrabbed);
+  const [grabbed, setGrabbed] = useState(false);
   const pull = useCallback(() => setNudge((n) => n + 1), []);
-  const onGrab = useCallback(() => {
-    setGrabbed(true);
-    try {
-      localStorage.setItem(GRABBED_KEY, '1');
-    } catch {
-      /* private mode: the hint simply shows again next visit */
-    }
-  }, []);
+  const onGrab = useCallback(() => setGrabbed(true), []);
   // Start the hint once the card is well inside the screen.
   useEffect(() => {
     if (grabbed || !faces) return;
     const el = wide ? section.current : box.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && setHint(true), { threshold: wide ? 0.45 : 0.6 });
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setHint(true), { threshold: wide ? 0.3 : 0.5 });
     io.observe(el);
     return () => io.disconnect();
   }, [grabbed, faces, wide, section]);
