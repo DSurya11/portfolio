@@ -188,7 +188,7 @@ export default function Projects() {
   );
 
   return (
-    <section id="projects" ref={section} className="relative overflow-x-clip py-24 lg:pt-[8.25rem]">
+    <section id="projects" ref={section} className="relative overflow-x-clip py-24 lg:pt-[12.75rem]">
       <div className="page-x relative z-10 lg:flex lg:items-center lg:gap-4 motion-reduce:lg:block">
         <div className="lg:hidden motion-reduce:lg:block">
           <SectionHeading eyebrow="Beyond the platform">
