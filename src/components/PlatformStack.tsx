@@ -104,6 +104,7 @@ export function PlatformStack() {
   const svg = useRef<SVGSVGElement>(null);
   const [selected, setSelected] = useState('30');
   const [mode, setMode] = useState<'up' | 'down' | null>(null);
+  const [running, setRunning] = useState(false);
   const lifts = useRef(layers.map(() => ({ y: LIFT, o: 0 })));
   const tl = useRef<gsap.core.Timeline | null>(null);
   const layer = layers.find((l) => l.id === selected)!;
@@ -137,7 +138,8 @@ export function PlatformStack() {
     const session = layers.map((l, i) => (l.life === 'Per session' ? i : -1)).filter((i) => i >= 0);
     const order = to === 'up' ? layers.map((_, i) => i) : [...session].reverse();
     const rows = gsap.utils.toArray<HTMLElement>('.wave-row', root.current);
-    const t = gsap.timeline({ onUpdate: paint });
+    setRunning(!instant);
+    const t = gsap.timeline({ onUpdate: paint, onComplete: () => setRunning(false) });
     order.forEach((i, n) => {
       const target = to === 'up' ? { y: 0, o: 1 } : { y: LIFT, o: 0 };
       t.to(lifts.current[i], { ...target, duration: instant ? 0 : 0.65, ease: to === 'up' ? 'power3.out' : 'power2.in' }, instant ? 0 : n * 0.16);
@@ -235,33 +237,44 @@ export function PlatformStack() {
           })}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => play('up')}
-            className={`rounded-lg px-4 py-2 font-mono text-sm transition-colors ${
-              mode === 'up' ? 'border border-white/10 text-slate-500 hover:text-slate-300' : 'bg-[#00d4ff] font-semibold text-black hover:bg-[#33ddff]'
-            }`}
-          >
-            $ make up
-          </button>
-          <button
-            type="button"
-            onClick={() => play('down')}
-            className={`rounded-lg px-4 py-2 font-mono text-sm transition-colors ${
-              mode === 'down' ? 'border border-white/10 text-slate-500 hover:text-slate-300' : 'border border-white/25 text-slate-100 hover:border-white/60'
-            }`}
-          >
-            $ make down
-          </button>
+        {/* One switch: the filled half is the platform's current state; pressing the other half runs it. */}
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <div role="group" aria-label="Platform state" className="inline-flex rounded-xl border border-white/15 bg-[#07070b] p-1">
+            {(['up', 'down'] as const).map((m) => {
+              const current = mode === m;
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={current}
+                  disabled={current && !running}
+                  onClick={() => play(m)}
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-sm transition-colors duration-200 ${
+                    current
+                      ? m === 'up'
+                        ? 'bg-[#00d4ff] font-semibold text-black'
+                        : 'bg-slate-200 font-semibold text-black'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                  } disabled:cursor-default`}
+                >
+                  <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${current ? 'bg-black' : 'bg-slate-600'}`} />
+                  make {m}
+                </button>
+              );
+            })}
+          </div>
+          <p className="min-h-[1.25rem] text-center font-mono text-xs text-slate-400" aria-live="polite">
+            {running
+              ? mode === 'up'
+                ? 'running make up…'
+                : 'running make down…'
+              : mode === 'down'
+                ? 'Platform is down · verify-empty ✓ nothing billable left (about 17 min for real)'
+                : mode === 'up'
+                  ? 'Platform is up (about 27 min for real) · click a layer'
+                  : '\u00a0'}
+          </p>
         </div>
-        <p className="mt-3 text-center font-mono text-xs text-slate-400" aria-live="polite">
-          {mode === 'down'
-            ? 'verify-empty ✓ nothing billable left (about 17 min for real)'
-            : mode === 'up'
-              ? 'platform up (about 27 min for real) · click a layer'
-              : ' '}
-        </p>
         <div className="mt-3 flex justify-center gap-5 font-mono text-[11px] uppercase tracking-widest text-slate-500">
           <span className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 border border-slate-500 bg-[#161b25]" /> Permanent
