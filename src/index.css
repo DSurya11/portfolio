@@ -23,7 +23,8 @@ body {
 ::selection { background: #00d4ff33; color: #00d4ff; }
 
 /* Split letters keep their 3D flip crisp and on one baseline. */
-.split-char { display: inline-block; will-change: transform; backface-visibility: hidden; }
+.split-word { display: inline-block; white-space: nowrap; }
+.split-char { display: inline-block; backface-visibility: hidden; }
 
 /* Film grain: a tiled noise texture painted into the page background (behind the content and
    scrolling with it). As a fixed full-screen layer on top, every frame had to be blended with it,
@@ -185,51 +186,5 @@ body {
   .hero-name-size { font-size: max(110px, min(21vw, calc((89svh - 490px) / 0.78))); }
 }
 
-/* Platform stack (isometric 3D). The scene is rotated into an isometric view; each slab is
-   lifted along its own z axis by GSAP, so slabs stack vertically on screen. */
-.iso-scene {
-  --slab: 210px;
-  --thick: 16px;
-  width: 0;
-  height: 0;
-  transform-style: preserve-3d;
-  transform: rotateX(58deg) rotateZ(-42deg);
-}
-@media (max-width: 640px) {
-  .iso-scene { --slab: 150px; --thick: 10px; }
-}
-.iso-slab {
-  position: absolute;
-  left: calc(var(--slab) / -2);
-  top: calc(var(--slab) / -2);
-  width: var(--slab);
-  height: var(--slab);
-  transform-style: preserve-3d;
-  cursor: pointer;
-  outline: none;
-}
-.iso-top {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  padding: 14px;
-  background: #141821;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  transition: background-color 0.3s, border-color 0.3s;
-}
-.iso-front, .iso-side { position: absolute; background: #0b0e14; border: 1px solid rgba(148, 163, 184, 0.2); }
-.iso-front { left: 0; bottom: 0; width: 100%; height: var(--thick); transform-origin: bottom; transform: rotateX(90deg); }
-.iso-side { right: 0; top: 0; width: var(--thick); height: 100%; transform-origin: right; transform: rotateY(-90deg); }
-.iso-slab.is-session .iso-top { background: #0c2a33; border-color: rgba(0, 212, 255, 0.55); }
-.iso-slab.is-session .iso-front, .iso-slab.is-session .iso-side { background: #08191f; border-color: rgba(0, 212, 255, 0.3); }
-.iso-slab:hover .iso-top, .iso-slab:focus-visible .iso-top { border-color: #e2e8f0; }
-.iso-slab.is-selected .iso-top { background: #1a3d48; border-color: #00d4ff; }
-.iso-slab.is-permanent.is-selected .iso-top { background: #232a37; border-color: #e2e8f0; }
-.iso-label { display: flex; flex-direction: column; gap: 2px; text-align: left; }
-.iso-name { font: 600 15px/1.1 ui-monospace, Menlo, monospace; color: #f1f5f9; }
-.iso-sub { font: 500 11px/1.2 ui-monospace, Menlo, monospace; color: #94a3b8; }
-@media (max-width: 640px) {
-  .iso-name { font-size: 12px; }
-  .iso-sub { display: none; }
-}
+.slab:hover .slab-top { stroke: #e2e8f0; }
+.slab:focus-visible .slab-top { stroke: #ffffff; stroke-width: 2; }

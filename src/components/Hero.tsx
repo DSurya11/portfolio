@@ -37,7 +37,7 @@ export default function Hero() {
   useGSAP(
     () => {
       if (reducedMotion()) return;
-      const split = SplitText.create('.hero-name', { type: 'chars', charsClass: 'split-char', aria: 'none' });
+      const split = SplitText.create('.hero-name', { type: 'chars', tag: 'span', charsClass: 'split-char', aria: 'none' });
       // Motion starts a beat after setup, once the page's startup work has finished.
       const intro = gsap.timeline({ paused: true, defaults: { ease: 'expo.out' } });
       intro

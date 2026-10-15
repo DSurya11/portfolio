@@ -16,7 +16,7 @@ export function SectionHeading({ eyebrow, children, className = '' }: { eyebrow:
         once: true,
         onEnter: () => {
           const h2 = ref.current!.querySelector('h2')!;
-          const split = SplitText.create(h2, { type: 'chars', charsClass: 'split-char' });
+          const split = SplitText.create(h2, { type: 'words,chars', tag: 'span', wordsClass: 'split-word', charsClass: 'split-char' });
           gsap.from(split.chars, {
             rotateX: -95,
             yPercent: 55,

@@ -191,17 +191,17 @@ export default function Projects() {
     <section id="projects" ref={section} className="relative overflow-x-clip py-24 lg:py-0 motion-reduce:lg:py-24">
       <div className="page-x relative z-10 lg:flex lg:h-screen lg:items-center lg:gap-4 motion-reduce:lg:h-auto motion-reduce:lg:block">
         <div className="lg:hidden motion-reduce:lg:block">
-          <SectionHeading eyebrow="What I've built">
-            Featured <span className="text-[#00d4ff]">Projects</span>
+          <SectionHeading eyebrow="Beyond the platform">
+            Other Featured <span className="text-[#00d4ff]">Projects</span>
           </SectionHeading>
         </div>
 
         <aside className="proj-index hidden w-[19rem] shrink-0 flex-col lg:flex motion-reduce:lg:hidden">
           <p className="font-mono text-sm uppercase tracking-widest text-[#00d4ff]">
-            <Decrypt text="What I've built" />
+            <Decrypt text="Beyond the platform" />
           </p>
-          <h2 className="mt-3 text-5xl font-bold leading-[1.05] tracking-tight text-white">
-            Featured <span className="text-[#00d4ff]">Projects</span>
+          <h2 className="mt-3 text-[2.6rem] font-bold leading-[1.05] tracking-tight text-white">
+            Other Featured <span className="text-[#00d4ff]">Projects</span>
           </h2>
           <ol className="mt-10 space-y-1">
             {projects.map((p, i) => (

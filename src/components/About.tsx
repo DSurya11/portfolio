@@ -115,7 +115,7 @@ export default function About() {
 
   useGSAP(() => {
     if (reducedMotion()) return;
-    const split = SplitText.create(bio.current!, { type: 'words', wordsClass: 'bio-word', aria: 'none' });
+    const split = SplitText.create(bio.current!, { type: 'words', tag: 'span', wordsClass: 'bio-word', aria: 'none' });
     gsap.fromTo(
       split.words,
       { opacity: 0.22 },
