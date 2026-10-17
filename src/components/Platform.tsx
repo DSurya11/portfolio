@@ -1,6 +1,6 @@
 import { lazy, Suspense, useRef } from 'react';
 import { useInView } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Video } from 'lucide-react';
 import { SectionHeading } from './fx/SectionHeading';
 import { PlatformStack } from './PlatformStack';
 import { GithubIcon } from './icons';
@@ -173,6 +173,27 @@ export default function Platform() {
             </a>
           ))}
         </div>
+
+        {/* Screen recordings of the last live session (2026-10-17), before the AWS account was shut down. */}
+        <a
+          href="https://drive.google.com/drive/folders/1D1rSuFzkXRDxJ1WTMvxyrAtDYF9yAwll?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group mt-3 flex items-start gap-4 rounded-xl border border-white/10 bg-[#0b0b12] p-5 transition-colors hover:border-white/25"
+        >
+          <Video size={20} className="mt-0.5 shrink-0 text-[#00d4ff]" />
+          <span className="flex-1">
+            <span className="flex items-center gap-2 font-mono text-sm text-white">
+              Demo videos: the platform running on AWS
+              <ArrowUpRight size={14} className="ml-auto text-slate-500 transition-colors group-hover:text-white" />
+            </span>
+            <span className="mt-2 block text-xs leading-relaxed text-slate-400">
+              Screen recordings of a full session: make up, the 42 end-to-end checks, a service created from a Backstage form and
+              live in under four minutes, a push deployed with no clicks, a database and a feature flag added, Grafana, a policy
+              refusing a pod, the service decommissioned, and make down back to nothing billable.
+            </span>
+          </span>
+        </a>
       </div>
     </section>
   );

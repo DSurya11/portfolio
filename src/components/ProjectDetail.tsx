@@ -46,7 +46,10 @@ export function ProjectDetail({ project, origin, onClose }: { project: Project; 
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-6">
+    // Sized to the visible screen (dvh), not vh: on phones 90vh is measured with the address bar
+    // hidden, so with the bar showing the panel was taller than the screen, centring pushed its
+    // header (and the close button) under the bar, and the scroll lock kept it out of reach.
+    <div className="fixed inset-x-0 top-0 z-[70] flex h-[100dvh] items-center justify-center p-3 sm:p-6">
       <motion.div
         className="absolute inset-0 bg-[#05050a]/75 backdrop-blur-sm"
         initial={{ opacity: 0 }}
@@ -66,7 +69,7 @@ export function ProjectDetail({ project, origin, onClose }: { project: Project; 
             ? { opacity: 0 }
             : { clipPath: ['inset(0px 0px 0px 0% round 18px)', 'inset(0px 0px 0px 100% round 18px)'], opacity: [1, 0], transition: { duration: 0.34, ease: [0.4, 0, 1, 1] } }
         }
-        className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto overscroll-contain rounded-[18px] border border-white/10 bg-[#0b0b12] outline-none shadow-2xl shadow-black/60"
+        className="relative max-h-full w-full max-w-3xl overflow-y-auto overscroll-contain rounded-[18px] border border-white/10 bg-[#0b0b12] outline-none shadow-2xl shadow-black/60"
       >
         <span aria-hidden className="panel-sweep" style={{ ['--sweep' as string]: project.accent }} />
         <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-white/10 bg-[#0b0b12]/95 px-5 py-3 backdrop-blur">
@@ -142,6 +145,18 @@ export function ProjectDetail({ project, origin, onClose }: { project: Project; 
                 Live Demo
               </a>
             )}
+          </motion.div>
+
+          {/* Phones: a close button where the thumb is after reading to the end. */}
+          <motion.div variants={item} className="sm:hidden">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 py-3 text-sm text-slate-200 active:bg-white/10"
+            >
+              <X size={16} />
+              Close
+            </button>
           </motion.div>
         </motion.div>
       </motion.div>
