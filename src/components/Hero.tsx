@@ -126,7 +126,7 @@ export default function Hero() {
               <span className="absolute inset-0 -translate-x-full skew-x-12 bg-white/40 transition-transform duration-700 group-hover:translate-x-full" />
             </button>
             <a
-              href="https://drive.google.com/file/d/1im7brBirdHxuf1hUdZLaOUYjAk4Ou3UT/view?usp=sharing"
+              href="https://drive.google.com/file/d/1OnWTHYiekFKXI4mdxLkn_Xm9-qNFXkOA/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-[#00d4ff77] bg-black/80 px-7 py-3.5 text-sm font-semibold text-[#00d4ff] transition-colors duration-200 hover:bg-[#00d4ff18]"

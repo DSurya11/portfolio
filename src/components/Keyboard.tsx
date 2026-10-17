@@ -13,7 +13,7 @@ const keys: Key[] = [
   { id: 'leetcode', label: 'LeetCode', legend: 'L', href: 'https://leetcode.com/u/this_is_surya/', icon: <Trophy size={20} /> },
   { id: 'codeforces', label: 'Codeforces', legend: 'F', href: 'https://codeforces.com/profile/_.surya._', icon: <Code2 size={20} /> },
   { id: 'codechef', label: 'CodeChef', legend: 'C', href: 'https://www.codechef.com/users/this_is_surya', icon: <ExternalLink size={20} /> },
-  { id: 'resume', label: 'Resume', legend: 'R', href: 'https://drive.google.com/file/d/1im7brBirdHxuf1hUdZLaOUYjAk4Ou3UT/view?usp=sharing', icon: <FileText size={20} /> },
+  { id: 'resume', label: 'Resume', legend: 'R', href: 'https://drive.google.com/file/d/1OnWTHYiekFKXI4mdxLkn_Xm9-qNFXkOA/view?usp=sharing', icon: <FileText size={20} /> },
 ];
 const emailKey: Key = { id: 'email', label: EMAIL, legend: 'E', href: `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`, icon: <Mail size={20} /> };
 
