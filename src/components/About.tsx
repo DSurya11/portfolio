@@ -168,11 +168,11 @@ function Badge({ section }: { section: React.RefObject<HTMLElement | null> }) {
 
   if (wide)
     return (
-      <>
+      <div className="pointer-events-none absolute inset-0 mx-auto max-w-[1440px]">
         {card}
         {hook}
         {hintEl}
-      </>
+      </div>
     );
   return (
     <div ref={box} data-badge-box className="page-x relative mt-4 h-[520px] sm:h-[600px]">
