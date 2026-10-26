@@ -218,7 +218,8 @@ export default function About() {
               I'm a final year Computer Science student at <span className="text-[#00d4ff] font-medium">IIITDM Jabalpur</span>.
               I'm an R&amp;D intern at Airspan Networks, where I deploy a telecom network-management product with Helm on
               Kubernetes and automate its regression testing. In my own time I built an internal developer platform on AWS:
-              Terraform, EKS, Argo CD, Backstage and a shared CI that signs what it builds.
+              Terraform, EKS, Argo CD, Backstage and a shared CI that signs what it builds. I also build AI agents: a voice
+              mock interviewer, a job-search assistant and a market-news Q&amp;A, each with its answers checked in code.
             </p>
 
             <dl className="mb-8 divide-y divide-white/10 rounded-xl border border-white/10 bg-[#0b0b12]">
@@ -227,6 +228,7 @@ export default function About() {
                 ['Degree', 'B.Tech – CSE'],
                 ['CPI', '8.1 / 10'],
                 ['Duration', 'Aug 2023 – May 2027'],
+                ['Leadership', 'Captain, cricket team'],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-baseline justify-between gap-6 px-5 py-3">
                   <dt className="text-sm text-slate-500">{k}</dt>

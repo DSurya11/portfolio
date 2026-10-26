@@ -10,6 +10,7 @@ import { onReady, useAppReady, markDone } from '../lib/ready';
 const typingPhrases = [
   'I build platforms on Kubernetes and AWS',
   'I automate delivery: CI, GitOps, Terraform',
+  'I build AI agents whose answers are checked in code',
   'I build full-stack and ML systems',
   'LeetCode Knight | Top 3% globally',
 ];
