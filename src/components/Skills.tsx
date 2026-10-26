@@ -19,7 +19,7 @@ const skillGroups = [
   { category: 'Frontend', color: '#a78bfa', skills: ['React.js', 'HTML/CSS', 'Socket.IO'] },
   { category: 'Backend', color: '#10b981', skills: ['Node.js', 'Express.js', 'FastAPI', 'REST APIs', 'WebSockets', 'BullMQ', 'Microservices'] },
   { category: 'Databases & Cache', color: '#f59e0b', skills: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Prisma ORM', 'SQLAlchemy'] },
-  { category: 'ML / AI', color: '#ec4899', skills: ['NumPy', 'Pandas', 'Scikit-learn', 'XGBoost', 'TensorFlow', 'Keras', 'Sentence Transformers', 'LLM APIs'] },
+  { category: 'ML / AI', color: '#ec4899', skills: ['NumPy', 'Pandas', 'Scikit-learn', 'XGBoost', 'TensorFlow', 'Keras', 'Sentence Transformers', 'LLM APIs', 'AI agents', 'Tool calling', 'MCP', 'LangGraph', 'Evals'] },
   { category: 'Testing', color: '#84cc16', skills: ['Robot Framework', 'Playwright', 'pytest'] },
   { category: 'Tools', color: '#f97316', skills: ['Docker Compose', 'Git', 'Postman'] },
 ];
