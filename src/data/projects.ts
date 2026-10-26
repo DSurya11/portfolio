@@ -102,7 +102,7 @@ export const projects: Project[] = [
       'CI runs lint and 180+ tests, including a real-browser test of the dashboard',
     ],
     github: 'https://github.com/DSurya11/tachyon-news',
-    live: 'https://tachyon-news.vercel.app/?demo=1',
+    live: 'https://tachyon-news.vercel.app',
     accent: '#10b981',
     diagram: {
       nodes: [
